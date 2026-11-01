@@ -2,1431 +2,2518 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DV HAM RADIO</title>
-
-<link rel="stylesheet"
-href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-
-<style>
-:root {
-  --bg: #080f19;
-  --panel: #0b1420;
-  --card: #172638;
-  --border: #34485e;
-  --green: #6ee7a0;
-  --muted: #9caec1;
-  --white: #f1f5f9;
-}
-
-* { box-sizing: border-box; }
-
-html { scroll-behavior: smooth; }
-
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--white);
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-button, input { font-family: inherit; }
-
-.app {
-  max-width: 950px;
-  margin: 18px auto;
-  padding: 20px 14px 28px;
-  background: var(--panel);
-  border: 1px solid #293b4d;
-  border-radius: 15px;
-  min-height: 90vh;
-}
-
-header {
-  text-align: center;
-  padding: 12px 0 20px;
-}
-
-h1 {
-  margin: 0;
-  font-size: 27px;
-  font-weight: 800;
-}
-
-h1 span { color: var(--green); }
-
-.rule {
-  height: 2px;
-  background: #32475a;
-  margin-top: 19px;
-}
-
-.page { display: none; }
-
-#home {
-  display: grid;
-  max-width: 480px;
-  margin: auto;
-  gap: 13px;
-}
-
-#banks:target,
-#cb:target,
-#db:target,
-#amateur:target {
-  display: block;
-}
-
-body:has(.page:target) #home {
-  display: none;
-}
-
-.menu {
-  display: flex;
-  align-items: center;
-  gap: 13px;
-  width: 100%;
-  padding: 16px 13px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  color: white;
-  text-align: left;
-  text-decoration: none;
-}
-
-.menu:hover { background: #22384e; }
-
-.ico {
-  width: 46px;
-  height: 46px;
-  flex-shrink: 0;
-  background: #263b50;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #8de4b0;
-  font-size: 25px;
-}
-
-.name {
-  font-size: 14px;
-  font-weight: bold;
-}
-
-.sub {
-  display: block;
-  font-size: 12px;
-  color: var(--muted);
-  margin-top: 4px;
-}
-
-.arrow {
-  margin-left: auto;
-  color: var(--green);
-  font-size: 24px;
-}
-
-.back {
-  display: inline-block;
-  padding: 11px 14px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--green);
-  text-decoration: none;
-  font-size: 13px;
-}
-
-h2 {
-  font-size: 19px;
-  margin: 22px 0 6px;
-}
-
-.desc {
-  font-size: 12px;
-  color: var(--muted);
-  margin-bottom: 15px;
-}
-
-.creator-credit {
-  margin-top: 25px;
-  padding: 20px 15px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  text-align: center;
-}
-
-.creator-credit span {
-  display: block;
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: bold;
-  letter-spacing: 2px;
-  margin-bottom: 8px;
-}
-
-.creator-credit strong {
-  display: block;
-  color: var(--green);
-  font-size: 23px;
-  font-weight: 800;
-}
-
-.clock-box {
-  padding: 20px 15px;
-  background: #101e2e;
-  border: 1px solid #416c5b;
-  border-radius: 12px;
-  text-align: center;
-}
-
-.clock-label {
-  color: var(--muted);
-  font-size: 11px;
-  letter-spacing: 1.5px;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-.clock-time {
-  color: var(--green);
-  font-size: 40px;
-  font-weight: 800;
-  letter-spacing: 2px;
-  font-variant-numeric: tabular-nums;
-}
-
-.clock-date {
-  color: white;
-  font-size: 20px;
-  font-weight: bold;
-  margin-top: 8px;
-}
-
-.clock-zone {
-  color: var(--muted);
-  font-size: 11px;
-  margin-top: 9px;
-}
-
-.scroll {
-  width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-table {
-  border-collapse: collapse;
-  width: 100%;
-  font-size: 13px;
-}
-
-th, td {
-  border: 1px solid #4b6074;
-  padding: 9px 10px;
-  text-align: left;
-}
-
-th {
-  background: #263b50;
-  color: #a3efbf;
-}
-
-td { background: #142334; }
-
-tbody tr:nth-child(even) td {
-  background: #1a2b3e;
-}
-
-#banks-table th:first-child,
-#banks-table td:first-child {
-  width: 65px;
-  text-align: center;
-}
-
-.cb-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.cb-grid th,
-.cb-grid td {
-  padding: 7px 4px;
-  text-align: center;
-}
-
-#db-table {
-  min-width: 970px;
-  font-size: 12px;
-}
-
-#db-table td,
-#db-table th {
-  white-space: nowrap;
-}
-
-#amateur-table { min-width: 730px; }
-
-.category-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin: 18px 0 13px;
-}
-
-.category-button {
-  min-height: 105px;
-  padding: 14px 8px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  color: white;
-  text-decoration: none;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  cursor: pointer;
-}
-
-.category-button:hover { background: #22384e; }
-
-.category-icons { font-size: 28px; }
-
-.category-title {
-  font-size: 12px;
-  font-weight: bold;
-  color: var(--green);
-  text-align: center;
-}
-
-.category-count {
-  font-size: 11px;
-  color: var(--muted);
-}
-
-.db-toolbar { margin: 12px 0; }
-
-.all-button {
-  display: inline-block;
-  padding: 11px 14px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--green);
-  font-size: 13px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.search-input {
-  width: 100%;
-  padding: 13px;
-  margin: 8px 0 12px;
-  background: #101e2e;
-  color: white;
-  border: 1px solid #496176;
-  border-radius: 9px;
-  outline: none;
-  font-size: 14px;
-}
-
-.search-input:focus { border-color: var(--green); }
-
-.search-input::placeholder { color: #8b9eaf; }
-
-#db-table tbody tr { display: none; }
-
-#db:has(#cat-aviation:checked)
-#db-table tbody tr[data-category="aviation"],
-#db:has(#cat-ov:checked)
-#db-table tbody tr[data-category="ov"],
-#db:has(#cat-all:checked)
-#db-table tbody tr {
-  display: table-row;
-}
-
-#cat-aviation:checked ~ .category-grid
-label[for="cat-aviation"],
-#cat-ov:checked ~ .category-grid
-label[for="cat-ov"] {
-  background: #173d32;
-  border-color: var(--green);
-}
-
-#cat-all:checked ~ .db-toolbar
-label[for="cat-all"] {
-  background: #173d32;
-  border-color: var(--green);
-}
-
-.db-radio {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-
-#db-results { display: none; }
-
-#db:has(.db-radio:checked) #db-results {
-  display: block;
-}
-
-.db-count {
-  font-size: 12px;
-  color: var(--muted);
-  margin: 9px 0;
-}
-
-.note, .hint {
-  font-size: 12px;
-  color: #91a9bd;
-  line-height: 1.6;
-  margin-top: 10px;
-}
-
-.websdr-link {
-  display: inline-block;
-  padding: 12px 17px;
-  margin: 8px 0 15px;
-  background: #1d704d;
-  border: 1px solid #65d99a;
-  border-radius: 9px;
-  color: white;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-/* KAART */
-
-#repeater-map {
-  width: 100%;
-  height: 430px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: #142334;
-  z-index: 0;
-}
-
-.map-controls {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
-  margin: 12px 0;
-}
-
-.map-toggle {
-  background: var(--card);
-  border: 1px solid var(--border);
-  color: var(--green);
-  border-radius: 8px;
-  padding: 10px 12px;
-  cursor: pointer;
-}
-
-.map-toggle:hover { background: #22384e; }
-
-.map-legend {
-  font-size: 12px;
-  color: var(--muted);
-}
-
-.legend-dot {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: var(--green);
-  vertical-align: middle;
-  margin-right: 5px;
-}
-
-.map-status {
-  padding: 10px;
-  font-size: 12px;
-  color: var(--muted);
-  background: var(--card);
-  border-radius: 8px;
-  margin-top: 10px;
-}
-
-.repeater-list {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-  margin-top: 15px;
-}
-
-.repeater-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 13px;
-  cursor: pointer;
-}
-
-.repeater-card:hover {
-  border-color: var(--green);
-}
-
-.repeater-card strong {
-  color: var(--green);
-  display: block;
-  margin-bottom: 7px;
-}
-
-.repeater-card span {
-  display: block;
-  font-size: 12px;
-  line-height: 1.7;
-}
-
-@media (max-width: 480px) {
-  .app {
-    margin: 0;
-    min-height: 100vh;
-    border-radius: 0;
-  }
-
-  .cb-grid { gap: 5px; }
-
-  .cb-grid table { font-size: 11px; }
-
-  .cb-grid th,
-  .cb-grid td { padding: 6px 2px; }
-
-  .clock-time { font-size: 34px; }
-
-  .repeater-list {
-    grid-template-columns: 1fr;
-  }
-
-  #repeater-map { height: 360px; }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>DV HAM RADIO</title>
+
+    <!-- Leaflet voor de interactieve OpenStreetMap-kaart -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+    <style>
+        /* =========================================
+           ALGEMENE INSTELLINGEN
+        ========================================= */
+
+        :root {
+            --background: #080f19;
+            --panel: #0b1420;
+            --card: #172638;
+            --card-hover: #22384e;
+            --border: #34485e;
+            --green: #6ee7a0;
+            --green-dark: #173d32;
+            --muted: #9caec1;
+            --white: #f1f5f9;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background: var(--background);
+            color: var(--white);
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        button,
+        input {
+            font-family: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .app {
+            max-width: 950px;
+            min-height: 90vh;
+            margin: 18px auto;
+            padding: 20px 14px 28px;
+            background: var(--panel);
+            border: 1px solid #293b4d;
+            border-radius: 15px;
+        }
+
+        /* =========================================
+           HEADER
+        ========================================= */
+
+        header {
+            text-align: center;
+            padding: 12px 0 20px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 27px;
+            font-weight: 800;
+        }
+
+        h1 span {
+            color: var(--green);
+        }
+
+        .rule {
+            height: 2px;
+            margin-top: 19px;
+            background: #32475a;
+        }
+
+        /* =========================================
+           PAGINANAVIGATIE
+        ========================================= */
+
+        #home {
+            display: grid;
+            max-width: 480px;
+            margin: auto;
+            gap: 13px;
+        }
+
+        .page {
+            display: none;
+        }
+
+        #banks:target,
+        #cb:target,
+        #db:target,
+        #amateur:target {
+            display: block;
+        }
+
+        body:has(.page:target) #home {
+            display: none;
+        }
+
+        .back {
+            display: inline-block;
+            padding: 11px 14px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--green);
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        .back:hover {
+            background: var(--card-hover);
+        }
+
+        /* =========================================
+           HOOFDMENU
+        ========================================= */
+
+        .menu {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            width: 100%;
+            padding: 16px 13px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: white;
+            text-align: left;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .menu:hover {
+            background: var(--card-hover);
+        }
+
+        .ico {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 46px;
+            height: 46px;
+            flex-shrink: 0;
+            background: #263b50;
+            border-radius: 10px;
+            color: #8de4b0;
+        }
+
+        .ico svg {
+            width: 29px;
+            height: 29px;
+        }
+
+        .name {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .sub {
+            display: block;
+            margin-top: 4px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .arrow {
+            margin-left: auto;
+            color: var(--green);
+            font-size: 24px;
+        }
+
+        /* =========================================
+           ONTWIKKELAAR
+        ========================================= */
+
+        .creator-credit {
+            margin-top: 25px;
+            padding: 20px 15px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .creator-credit span {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .creator-credit strong {
+            display: block;
+            color: var(--green);
+            font-size: 23px;
+            font-weight: 800;
+        }
+
+        /* =========================================
+           LIVE KLOK EN DATUM
+        ========================================= */
+
+        .clock-box {
+            padding: 20px 15px;
+            background: #101e2e;
+            border: 1px solid #416c5b;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .clock-label {
+            margin-bottom: 10px;
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 1.5px;
+        }
+
+        .clock-time {
+            color: var(--green);
+            font-size: 40px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .clock-date {
+            margin-top: 8px;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .clock-zone {
+            margin-top: 9px;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        /* =========================================
+           ALGEMENE PAGINAOPMAAK
+        ========================================= */
+
+        h2 {
+            margin: 22px 0 6px;
+            font-size: 19px;
+        }
+
+        .desc {
+            margin-bottom: 15px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .note,
+        .hint {
+            margin-top: 10px;
+            color: #91a9bd;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        /* =========================================
+           TABELLEN
+        ========================================= */
+
+        .scroll {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th,
+        td {
+            padding: 9px 10px;
+            border: 1px solid #4b6074;
+            text-align: left;
+        }
+
+        th {
+            background: #263b50;
+            color: #a3efbf;
+        }
+
+        td {
+            background: #142334;
+        }
+
+        tbody tr:nth-child(even) td {
+            background: #1a2b3e;
+        }
+
+        #banks-table th:first-child,
+        #banks-table td:first-child {
+            width: 65px;
+            text-align: center;
+        }
+
+        /* =========================================
+           27MC / CB RADIO
+        ========================================= */
+
+        .cb-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .cb-grid th,
+        .cb-grid td {
+            padding: 7px 4px;
+            text-align: center;
+        }
+
+        /* =========================================
+           FREQUENTIE DATABASE
+        ========================================= */
+
+        #db-table {
+            min-width: 970px;
+            font-size: 12px;
+        }
+
+        #db-table th,
+        #db-table td {
+            white-space: nowrap;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 18px 0 13px;
+        }
+
+        .category-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 110px;
+            padding: 14px 8px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .category-button:hover {
+            background: var(--card-hover);
+        }
+
+        .category-icons {
+            font-size: 28px;
+        }
+
+        .category-title {
+            color: var(--green);
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .category-count {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .db-radio {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #cat-aviation:checked
+        ~ .category-grid
+        label[for="cat-aviation"],
+
+        #cat-ov:checked
+        ~ .category-grid
+        label[for="cat-ov"] {
+            background: var(--green-dark);
+            border-color: var(--green);
+        }
+
+        #cat-all:checked
+        ~ .db-toolbar
+        label[for="cat-all"] {
+            background: var(--green-dark);
+            border-color: var(--green);
+        }
+
+        .db-toolbar {
+            margin: 12px 0;
+        }
+
+        .action-button {
+            display: inline-block;
+            padding: 11px 14px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--green);
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .action-button:hover {
+            background: var(--card-hover);
+        }
+
+        .search-input {
+            width: 100%;
+            margin: 8px 0 12px;
+            padding: 13px;
+            background: #101e2e;
+            border: 1px solid #496176;
+            border-radius: 9px;
+            color: white;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: var(--green);
+        }
+
+        .search-input::placeholder {
+            color: #8b9eaf;
+        }
+
+        .db-count {
+            margin: 9px 0;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        #db-table tbody tr {
+            display: none;
+        }
+
+        #db:has(#cat-aviation:checked)
+        #db-table tbody tr[data-category="aviation"] {
+            display: table-row;
+        }
+
+        #db:has(#cat-ov:checked)
+        #db-table tbody tr[data-category="ov"] {
+            display: table-row;
+        }
+
+        #db:has(#cat-all:checked)
+        #db-table tbody tr {
+            display: table-row;
+        }
+
+        #db-results {
+            display: none;
+        }
+
+        #db:has(.db-radio:checked) #db-results {
+            display: block;
+        }
+
+        .name-logo {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 9px;
+            min-width: 180px;
+        }
+
+        .name-logo img {
+            max-width: 75px;
+            max-height: 26px;
+            object-fit: contain;
+        }
+
+        /* =========================================
+           RADIO ZENDAMATEUR
+        ========================================= */
+
+        #amateur-table {
+            min-width: 730px;
+        }
+
+        .websdr-link {
+            display: inline-block;
+            margin: 8px 0 15px;
+            padding: 12px 17px;
+            background: #1d704d;
+            border: 1px solid #65d99a;
+            border-radius: 9px;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .websdr-link:hover {
+            background: #25865d;
+        }
+
+        /* =========================================
+           REPEATERKAART
+        ========================================= */
+
+        #repeater-map {
+            width: 100%;
+            height: 440px;
+            background: #142334;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            z-index: 0;
+        }
+
+        .map-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 12px 0;
+        }
+
+        .map-status {
+            margin-top: 10px;
+            padding: 12px;
+            background: var(--card);
+            border-radius: 9px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .map-legend {
+            margin: 12px 0;
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        .legend-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-right: 15px;
+        }
+
+        .legend-dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .legend-confirmed {
+            background: var(--green);
+        }
+
+        .legend-approximate {
+            background: #ffb45c;
+        }
+
+        .repeater-list {
+            display: grid;
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .repeater-card {
+            padding: 13px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .repeater-card:hover {
+            border-color: var(--green);
+        }
+
+        .repeater-card strong {
+            display: block;
+            margin-bottom: 7px;
+            color: var(--green);
+        }
+
+        .repeater-card span {
+            display: block;
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        /* =========================================
+           MOBIELE WEERGAVE
+        ========================================= */
+
+        @media (max-width: 480px) {
+            .app {
+                margin: 0;
+                min-height: 100vh;
+                border-radius: 0;
+            }
+
+            .cb-grid {
+                gap: 5px;
+            }
+
+            .cb-grid table {
+                font-size: 11px;
+            }
+
+            .cb-grid th,
+            .cb-grid td {
+                padding: 6px 2px;
+            }
+
+            .clock-time {
+                font-size: 34px;
+            }
+
+            .repeater-list {
+                grid-template-columns: 1fr;
+            }
+
+            #repeater-map {
+                height: 370px;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
 <div class="app">
 
-<header>
-  <h1>DV <span>HAM RADIO</span></h1>
-  <div class="rule"></div>
-</header>
+    <!-- =====================================
+         HEADER
+    ====================================== -->
 
-<!-- BEGINSCHERM -->
+    <header>
+        <h1>DV <span>HAM RADIO</span></h1>
+        <div class="rule"></div>
+    </header>
 
-<main id="home">
+    <!-- =====================================
+         BEGINSCHERM
+    ====================================== -->
 
-  <a class="menu" href="#banks">
-    <span class="ico">📻</span>
-    <span>
-      <span class="name">UNIDEN UBC125XLT</span>
-      <span class="sub">Bank inhoud</span>
-    </span>
-    <span class="arrow">›</span>
-  </a>
+    <main id="home">
 
-  <a class="menu" href="#cb">
-    <span class="ico">📡</span>
-    <span>
-      <span class="name">27MC / CB RADIO</span>
-      <span class="sub">Kanalen en frequenties</span>
-    </span>
-    <span class="arrow">›</span>
-  </a>
+        <!-- UNIDEN -->
 
-  <a class="menu" href="#db">
-    <span class="ico">🗄️</span>
-    <span>
-      <span class="name">FREQUENTIE DATABASE</span>
-      <span class="sub">Categorieën en frequentie zoeken</span>
-    </span>
-    <span class="arrow">›</span>
-  </a>
+        <a class="menu" href="#banks">
+            <span class="ico">
+                <svg
+                    viewBox="0 0 28 36"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                >
+                    <path d="M9 10V2h3v8"></path>
+                    <rect
+                        x="5"
+                        y="10"
+                        width="19"
+                        height="24"
+                        rx="3"
+                    ></rect>
+                    <rect
+                        x="8"
+                        y="14"
+                        width="13"
+                        height="7"
+                        rx="1"
+                    ></rect>
+                    <path d="M10 24h9M10 27h9M10 30h9"></path>
+                </svg>
+            </span>
 
-  <a class="menu" href="#amateur">
-    <span class="ico">📡</span>
-    <span>
-      <span class="name">RADIO ZENDAMATEUR</span>
-      <span class="sub">Repeaters en bereik op de kaart</span>
-    </span>
-    <span class="arrow">›</span>
-  </a>
+            <span>
+                <span class="name">
+                    UNIDEN UBC125XLT
+                </span>
 
-  <div class="creator-credit">
-    <span>ONTWIKKELD DOOR</span>
-    <strong>Daan Verburg</strong>
-  </div>
+                <span class="sub">
+                    Bank inhoud
+                </span>
+            </span>
 
-  <div class="clock-box">
-    <div class="clock-label">ACTUELE TIJD & DATUM</div>
-    <div class="clock-time" id="clock-time">--:--:--</div>
-    <div class="clock-date" id="clock-date">--/--/----</div>
-    <div class="clock-zone">
-      Nederland · Europe/Amsterdam
-    </div>
-  </div>
+            <span class="arrow">›</span>
+        </a>
 
-</main>
+        <!-- CB RADIO -->
 
-<!-- UNIDEN -->
+        <a class="menu" href="#cb">
+            <span class="ico">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.7"
+                >
+                    <rect
+                        x="3"
+                        y="8"
+                        width="18"
+                        height="12"
+                        rx="2"
+                    ></rect>
+                    <path d="M7 8 15 3M7 12h7M7 15h5"></path>
+                    <circle cx="17" cy="15" r="2"></circle>
+                </svg>
+            </span>
 
-<section class="page" id="banks">
-  <a class="back" href="#">← Terug naar menu</a>
+            <span>
+                <span class="name">
+                    27MC / CB RADIO
+                </span>
 
-  <h2>UNIDEN UBC125XLT</h2>
-  <div class="desc">Bank inhoud</div>
+                <span class="sub">
+                    Kanalen en frequenties
+                </span>
+            </span>
 
-  <table id="banks-table">
-    <thead>
-      <tr><th>Bank</th><th>Inhoud</th></tr>
-    </thead>
-    <tbody>
-      <tr><td>1</td><td>aviation general</td></tr>
-      <tr><td>2</td><td>AMS schiphol</td></tr>
-      <tr><td>3</td><td>Openbaar Vervoer</td></tr>
-      <tr><td>4</td><td>RadioAmateurs</td></tr>
-      <tr><td>5</td><td>27MC CB Radio</td></tr>
-      <tr><td>6</td><td>Scheepvaart</td></tr>
-      <tr><td>7</td><td>Luchtvaart MIL</td></tr>
-      <tr><td>8</td><td>PMR446 Portofoons</td></tr>
-      <tr><td>9</td><td>vakantie freqs</td></tr>
-      <tr><td>10</td><td>Daans Favourites</td></tr>
-    </tbody>
-  </table>
-</section>
+            <span class="arrow">›</span>
+        </a>
 
-<!-- CB RADIO -->
+        <!-- DATABASE -->
 
-<section class="page" id="cb">
-  <a class="back" href="#">← Terug naar menu</a>
+        <a class="menu" href="#db">
+            <span class="ico">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                >
+                    <rect
+                        x="5"
+                        y="2"
+                        width="14"
+                        height="20"
+                        rx="1.5"
+                    ></rect>
+                    <path d="M5 8h14M5 14h14"></path>
+                    <path d="M12 5h4M12 11h4M12 17h4"></path>
+                    <circle
+                        cx="8"
+                        cy="5"
+                        r="1"
+                        fill="currentColor"
+                    ></circle>
+                    <circle
+                        cx="8"
+                        cy="11"
+                        r="1"
+                        fill="currentColor"
+                    ></circle>
+                    <circle
+                        cx="8"
+                        cy="17"
+                        r="1"
+                        fill="currentColor"
+                    ></circle>
+                </svg>
+            </span>
 
-  <h2>27MC / CB RADIO</h2>
-  <div class="desc">40 kanalen en frequenties</div>
+            <span>
+                <span class="name">
+                    FREQUENTIE DATABASE
+                </span>
 
-  <div class="cb-grid">
-    <table>
-      <thead>
-        <tr>
-          <th>Kanaal</th>
-          <th>Frequentie (MHz)</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><td>1</td><td>26,965</td></tr>
-        <tr><td>2</td><td>26,975</td></tr>
-        <tr><td>3</td><td>26,985</td></tr>
-        <tr><td>4</td><td>27,005</td></tr>
-        <tr><td>5</td><td>27,015</td></tr>
-        <tr><td>6</td><td>27,025</td></tr>
-        <tr><td>7</td><td>27,035</td></tr>
-        <tr><td>8</td><td>27,055</td></tr>
-        <tr><td>9</td><td>27,065</td></tr>
-        <tr><td>10</td><td>27,075</td></tr>
-        <tr><td>11</td><td>27,085</td></tr>
-        <tr><td>12</td><td>27,105</td></tr>
-        <tr><td>13</td><td>27,115</td></tr>
-        <tr><td>14</td><td>27,125</td></tr>
-        <tr><td>15</td><td>27,135</td></tr>
-        <tr><td>16</td><td>27,155</td></tr>
-        <tr><td>17</td><td>27,165</td></tr>
-        <tr><td>18</td><td>27,175</td></tr>
-        <tr><td>19</td><td>27,185</td></tr>
-        <tr><td>20</td><td>27,205</td></tr>
-      </tbody>
-    </table>
+                <span class="sub">
+                    Categorieën en frequentie zoeken
+                </span>
+            </span>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Kanaal</th>
-          <th>Frequentie (MHz)</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><td>21</td><td>27,215</td></tr>
-        <tr><td>22</td><td>27,225</td></tr>
-        <tr><td>23</td><td>27,255</td></tr>
-        <tr><td>24</td><td>27,235</td></tr>
-        <tr><td>25</td><td>27,245</td></tr>
-        <tr><td>26</td><td>27,265</td></tr>
-        <tr><td>27</td><td>27,275</td></tr>
-        <tr><td>28</td><td>27,285</td></tr>
-        <tr><td>29</td><td>27,295</td></tr>
-        <tr><td>30</td><td>27,305</td></tr>
-        <tr><td>31</td><td>27,315</td></tr>
-        <tr><td>32</td><td>27,325</td></tr>
-        <tr><td>33</td><td>27,335</td></tr>
-        <tr><td>34</td><td>27,345</td></tr>
-        <tr><td>35</td><td>27,355</td></tr>
-        <tr><td>36</td><td>27,365</td></tr>
-        <tr><td>37</td><td>27,375</td></tr>
-        <tr><td>38</td><td>27,385</td></tr>
-        <tr><td>39</td><td>27,395</td></tr>
-        <tr><td>40</td><td>27,405</td></tr>
-      </tbody>
-    </table>
-  </div>
-</section>
+            <span class="arrow">›</span>
+        </a>
 
-<!-- FREQUENTIE DATABASE -->
+        <!-- ZENDAMATEUR -->
 
-<section class="page" id="db">
-  <a class="back" href="#">← Terug naar menu</a>
+        <a class="menu" href="#amateur">
+            <span class="ico">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                >
+                    <path
+                        d="M12 3v18M8 21h8M12 7 5 21M12 7l7 14M9 13h6M7 17h10"
+                    ></path>
+                    <path
+                        d="M7.5 5a7 7 0 0 0 0 6M16.5 5a7 7 0 0 1 0 6"
+                    ></path>
+                </svg>
+            </span>
 
-  <h2>FREQUENTIE DATABASE</h2>
-  <div class="desc">
-    Kies een categorie of zoek een frequentie
-  </div>
+            <span>
+                <span class="name">
+                    RADIO ZENDAMATEUR
+                </span>
 
-  <input class="db-radio"
-    type="radio" name="db-category"
-    id="cat-aviation">
+                <span class="sub">
+                    Repeaters en interactieve kaart
+                </span>
+            </span>
 
-  <input class="db-radio"
-    type="radio" name="db-category"
-    id="cat-ov">
+            <span class="arrow">›</span>
+        </a>
 
-  <input class="db-radio"
-    type="radio" name="db-category"
-    id="cat-all">
+        <!-- ONTWIKKELAAR -->
 
-  <div class="category-grid">
-    <label class="category-button"
-      for="cat-aviation">
-      <span class="category-icons">✈️</span>
-      <span class="category-title">AVIATION</span>
-      <span class="category-count">4 frequenties</span>
-    </label>
+        <div class="creator-credit">
+            <span>ONTWIKKELD DOOR</span>
+            <strong>Daan Verburg</strong>
+        </div>
 
-    <label class="category-button"
-      for="cat-ov">
-      <span class="category-icons">🚌 🚆</span>
-      <span class="category-title">
-        OPENBAAR VERVOER
-      </span>
-      <span class="category-count">5 frequenties</span>
-    </label>
-  </div>
+        <!-- LIVE KLOK -->
 
-  <div class="db-toolbar">
-    <label class="all-button" for="cat-all">
-      ALLE FREQUENTIES
-    </label>
-  </div>
+        <div class="clock-box">
+            <div class="clock-label">
+                ACTUELE TIJD & DATUM
+            </div>
 
-  <input
-    id="frequency-search"
-    class="search-input"
-    type="search"
-    placeholder="Zoek frequentie of naam..."
-    autocomplete="off">
+            <div
+                class="clock-time"
+                id="clock-time"
+            >
+                --:--:--
+            </div>
 
-  <div class="db-count" id="db-count">
-    Selecteer een categorie.
-  </div>
+            <div
+                class="clock-date"
+                id="clock-date"
+            >
+                --/--/----
+            </div>
 
-  <div id="db-results">
-    <div class="scroll">
-      <table id="db-table">
-        <thead>
-          <tr>
-            <th>FREQUENTIE</th>
-            <th>NAAM</th>
-            <th>TOONMODUS</th>
-            <th>TOON</th>
-            <th>DUPLEX</th>
-            <th>Offset/TX Freq</th>
-            <th>Mode</th>
-            <th>Vermogen</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr data-category="overig">
-            <td>145,57500</td><td>PI3UTR RX (Utrecht)</td>
-            <td>Tone</td><td>77,0</td><td>-</td>
-            <td>0,600000</td><td>FM</td><td>High</td>
-          </tr>
-          <tr data-category="overig">
-            <td>144,97500</td><td>PI3UTR TX (Utrecht)</td>
-            <td>Tone</td><td>77,0</td><td></td>
-            <td></td><td>FM</td><td>High</td>
-          </tr>
-          <tr data-category="overig">
-            <td>145,62500</td><td>PI3AMF RX (Amersfoort)</td>
-            <td></td><td></td><td>-</td>
-            <td>0,600000</td><td>FM</td><td>High</td>
-          </tr>
-          <tr data-category="overig">
-            <td>430,07500</td><td>PI3ZST RX (Zeist)</td>
-            <td></td><td></td><td>+</td>
-            <td>1,600000</td><td>FM</td><td>High</td>
-          </tr>
+            <div class="clock-zone">
+                Nederland · Europe/Amsterdam
+            </div>
+        </div>
 
-          <tr data-category="aviation">
-            <td>121,80000</td><td>AMS GROUND</td>
-            <td></td><td></td><td>off</td>
-            <td></td><td>AM</td><td>High</td>
-          </tr>
-          <tr data-category="aviation">
-            <td>119,22500</td><td>AMS TOWER</td>
-            <td></td><td></td><td>off</td>
-            <td></td><td>AM</td><td>High</td>
-          </tr>
-          <tr data-category="aviation">
-            <td>119,05000</td><td>AMS APPROACH</td>
-            <td></td><td></td><td>off</td>
-            <td></td><td>AM</td><td>High</td>
-          </tr>
-          <tr data-category="aviation">
-            <td>126,67500</td><td>AMS APPROACH</td>
-            <td></td><td></td><td>off</td>
-            <td></td><td>AM</td><td>High</td>
-          </tr>
+    </main>
 
-          <tr data-category="overig">
-            <td>160,67500</td><td>SLUIS WBD RX</td>
-            <td></td><td></td><td>off</td>
-            <td></td><td>FM</td><td>High</td>
-          </tr>
-          <tr data-category="overig">
-            <td>156,67500</td><td>SLUIS WBD TX</td>
-            <td></td><td></td><td></td>
-            <td></td><td>FM</td><td>High</td>
-          </tr>
+    <!-- =====================================
+         UNIDEN UBC125XLT
+    ====================================== -->
 
-          <tr data-category="ov">
-            <td>429,88750</td><td>NS open</td>
-            <td></td><td></td><td>off</td>
-            <td></td><td>FM</td><td>High</td>
-          </tr>
-          <tr data-category="ov">
-            <td>429,88750</td><td>NS CTCSS</td>
-            <td>Tone</td><td>136,5</td><td></td>
-            <td></td><td>FM</td><td>High</td>
-          </tr>
-          <tr data-category="ov">
-            <td>429,85000</td><td>NS s&amp;v</td>
-            <td></td><td></td><td>off</td>
-            <td></td><td>FM</td><td>High</td>
-          </tr>
+    <section class="page" id="banks">
 
-          <tr data-category="overig">
-            <td>145,80000</td><td>ISS</td>
-            <td></td><td></td><td>off</td>
-            <td></td><td>FM</td><td>High</td>
-          </tr>
+        <a class="back" href="#">
+            ← Terug naar menu
+        </a>
 
-          <tr data-category="ov">
-            <td>419,87500</td><td>SYNTUS 030</td>
-            <td>Tone</td><td>100,0</td><td></td>
-            <td></td><td>FM</td><td>High</td>
-          </tr>
-          <tr data-category="ov">
-            <td>145,57500</td><td>GVB Remise</td>
-            <td>Tone</td><td>162,2</td><td></td>
-            <td></td><td>FM</td><td>High</td>
-          </tr>
-          <tr data-category="overig">
-            <td>455,81</td><td>McDon Neude</td>
-            <td>Tone</td><td>192,8</td><td></td>
-            <td></td><td>FM</td><td>High</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+        <h2>UNIDEN UBC125XLT</h2>
 
-    <div class="hint">
-      ← Veeg horizontaal voor alle kolommen →
-    </div>
-  </div>
-</section>
+        <div class="desc">
+            Bank inhoud
+        </div>
 
-<!-- RADIO ZENDAMATEUR -->
+        <table id="banks-table">
 
-<section class="page" id="amateur">
-  <a class="back" href="#">← Terug naar menu</a>
+            <thead>
+                <tr>
+                    <th>Bank</th>
+                    <th>Inhoud</th>
+                </tr>
+            </thead>
 
-  <h2>RADIO ZENDAMATEUR</h2>
-  <div class="desc">
-    Repeaters en amateurfrequenties – regio Utrecht
-  </div>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>aviation general</td>
+                </tr>
 
-  <a class="websdr-link"
-    href="http://websdr.pi1utr.hamnet.nl:8073/#freq=145575000,mod=nfm,sql=-150"
-    target="_blank"
-    rel="noopener noreferrer">
-    📻 WebSDR+ ↗
-  </a>
+                <tr>
+                    <td>2</td>
+                    <td>AMS schiphol</td>
+                </tr>
 
-  <div class="scroll">
-    <table id="amateur-table">
-      <thead>
-        <tr>
-          <th>Repeater</th>
-          <th>Locatie</th>
-          <th>RX (MHz)</th>
-          <th>TX (MHz)</th>
-          <th>CTCSS / Code</th>
-          <th>Mode</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>PI3UTR</td><td>Utrecht</td>
-          <td>145,5750</td><td>144,9750</td>
-          <td>77,0 Hz</td><td>FM</td>
-        </tr>
-        <tr>
-          <td>PI1UTR DMR</td><td>Utrecht</td>
-          <td>438,3500</td><td>430,7500</td>
-          <td>CC1</td><td>DMR</td>
-        </tr>
-        <tr>
-          <td>PI1UTR D-STAR</td><td>Utrecht</td>
-          <td>438,0750</td><td>430,4750</td>
-          <td>Digitaal</td><td>D-STAR</td>
-        </tr>
-        <tr>
-          <td>PI3AMF</td><td>Amersfoort</td>
-          <td>145,6250</td><td>145,0250</td>
-          <td>77,0 Hz*</td><td>FM</td>
-        </tr>
-        <tr>
-          <td>PI3ZST</td><td>Zeist</td>
-          <td>430,0750</td><td>431,6750</td>
-          <td>—</td><td>FM</td>
-        </tr>
-        <tr>
-          <td>PI6ATV</td><td>IJsselstein</td>
-          <td>10475,0000</td><td>—</td>
-          <td>n.v.t.</td><td>ATV FM</td>
-        </tr>
-        <tr>
-          <td>PI6ATV</td><td>IJsselstein</td>
-          <td>10290,0000</td><td>—</td>
-          <td>n.v.t.</td><td>DVB-S2</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+                <tr>
+                    <td>3</td>
+                    <td>Openbaar Vervoer</td>
+                </tr>
 
-  <h2>REPEATERKAART UTRECHT</h2>
-  <div class="desc">
-    Klik op een repeater om de gegevens te bekijken
-  </div>
+                <tr>
+                    <td>4</td>
+                    <td>RadioAmateurs</td>
+                </tr>
 
-  <div class="map-controls">
-    <button type="button"
-      class="map-toggle"
-      id="toggle-coverage">
-      Verberg bereikcirkels
-    </button>
-    <button type="button"
-      class="map-toggle"
-      id="fit-repeaters">
-      Toon alle repeaters
-    </button>
-    <span class="map-legend">
-      <span class="legend-dot"></span>
-      Indicatief bereik
-    </span>
-  </div>
+                <tr>
+                    <td>5</td>
+                    <td>27MC CB Radio</td>
+                </tr>
 
-  <div id="repeater-map"
-    role="region"
-    aria-label="Interactieve kaart met repeaters en bereikcirkels">
-  </div>
+                <tr>
+                    <td>6</td>
+                    <td>Scheepvaart</td>
+                </tr>
 
-  <div class="map-status" id="map-status">
-    De kaart wordt geladen wanneer je deze pagina opent.
-  </div>
+                <tr>
+                    <td>7</td>
+                    <td>Luchtvaart MIL</td>
+                </tr>
 
-  <div class="note">
-    De locaties zijn benaderingen van plaatscentra,
-    niet de bevestigde antenneposities. De cirkels
-    zijn instelbare voorbeeldafstanden, geen
-    berekende of gemeten radiodekking.
-  </div>
+                <tr>
+                    <td>8</td>
+                    <td>PMR446 Portofoons</td>
+                </tr>
 
-  <h2>REPEATERGEGEVENS</h2>
+                <tr>
+                    <td>9</td>
+                    <td>vakantie freqs</td>
+                </tr>
 
-  <div class="repeater-list">
-    <div class="repeater-card" data-repeater="PI3UTR">
-      <strong>📍 PI3UTR – Utrecht</strong>
-      <span>RX: 145,5750 MHz</span>
-      <span>TX: 144,9750 MHz</span>
-      <span>CTCSS: 77,0 Hz</span>
-      <span>Mode: FM</span>
-    </div>
+                <tr>
+                    <td>10</td>
+                    <td>Daans Favourites</td>
+                </tr>
+            </tbody>
 
-    <div class="repeater-card" data-repeater="PI1UTR DMR">
-      <strong>📍 PI1UTR DMR – Utrecht</strong>
-      <span>RX: 438,3500 MHz</span>
-      <span>TX: 430,7500 MHz</span>
-      <span>Code: CC1</span>
-      <span>Mode: DMR</span>
-    </div>
+        </table>
 
-    <div class="repeater-card" data-repeater="PI1UTR D-STAR">
-      <strong>📍 PI1UTR D-STAR – Utrecht</strong>
-      <span>RX: 438,0750 MHz</span>
-      <span>TX: 430,4750 MHz</span>
-      <span>Mode: D-STAR</span>
-    </div>
+    </section>
 
-    <div class="repeater-card" data-repeater="PI3AMF">
-      <strong>📍 PI3AMF – Amersfoort</strong>
-      <span>RX: 145,6250 MHz</span>
-      <span>TX: 145,0250 MHz</span>
-      <span>CTCSS: 77,0 Hz*</span>
-      <span>Mode: FM</span>
-    </div>
+    <!-- =====================================
+         27MC / CB RADIO
+    ====================================== -->
 
-    <div class="repeater-card" data-repeater="PI3ZST">
-      <strong>📍 PI3ZST – Zeist</strong>
-      <span>RX: 430,0750 MHz</span>
-      <span>TX: 431,6750 MHz</span>
-      <span>Mode: FM</span>
-    </div>
+    <section class="page" id="cb">
 
-    <div class="repeater-card" data-repeater="PI6ATV">
-      <strong>📍 PI6ATV – IJsselstein</strong>
-      <span>RX: 10475,0000 MHz – ATV FM</span>
-      <span>RX: 10290,0000 MHz – DVB-S2</span>
-      <span>Amateurtelevisie</span>
-    </div>
-  </div>
+        <a class="back" href="#">
+            ← Terug naar menu
+        </a>
 
-  <div class="note">
-    RX = repeateruitgang waarop je luistert.
-    TX = repeateringang waarop je zendt.
-    Controleer de actuele repeatergegevens bij
-    de beheerder voordat je gaat zenden.
-  </div>
-</section>
+        <h2>27MC / CB RADIO</h2>
+
+        <div class="desc">
+            Alle 40 kanalen en frequenties
+        </div>
+
+        <div class="cb-grid">
+
+            <!-- KANAAL 1 T/M 20 -->
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Kanaal</th>
+                        <th>Frequentie (MHz)</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr><td>1</td><td>26,965</td></tr>
+                    <tr><td>2</td><td>26,975</td></tr>
+                    <tr><td>3</td><td>26,985</td></tr>
+                    <tr><td>4</td><td>27,005</td></tr>
+                    <tr><td>5</td><td>27,015</td></tr>
+                    <tr><td>6</td><td>27,025</td></tr>
+                    <tr><td>7</td><td>27,035</td></tr>
+                    <tr><td>8</td><td>27,055</td></tr>
+                    <tr><td>9</td><td>27,065</td></tr>
+                    <tr><td>10</td><td>27,075</td></tr>
+                    <tr><td>11</td><td>27,085</td></tr>
+                    <tr><td>12</td><td>27,105</td></tr>
+                    <tr><td>13</td><td>27,115</td></tr>
+                    <tr><td>14</td><td>27,125</td></tr>
+                    <tr><td>15</td><td>27,135</td></tr>
+                    <tr><td>16</td><td>27,155</td></tr>
+                    <tr><td>17</td><td>27,165</td></tr>
+                    <tr><td>18</td><td>27,175</td></tr>
+                    <tr><td>19</td><td>27,185</td></tr>
+                    <tr><td>20</td><td>27,205</td></tr>
+                </tbody>
+            </table>
+
+            <!-- KANAAL 21 T/M 40 -->
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Kanaal</th>
+                        <th>Frequentie (MHz)</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr><td>21</td><td>27,215</td></tr>
+                    <tr><td>22</td><td>27,225</td></tr>
+                    <tr><td>23</td><td>27,255</td></tr>
+                    <tr><td>24</td><td>27,235</td></tr>
+                    <tr><td>25</td><td>27,245</td></tr>
+                    <tr><td>26</td><td>27,265</td></tr>
+                    <tr><td>27</td><td>27,275</td></tr>
+                    <tr><td>28</td><td>27,285</td></tr>
+                    <tr><td>29</td><td>27,295</td></tr>
+                    <tr><td>30</td><td>27,305</td></tr>
+                    <tr><td>31</td><td>27,315</td></tr>
+                    <tr><td>32</td><td>27,325</td></tr>
+                    <tr><td>33</td><td>27,335</td></tr>
+                    <tr><td>34</td><td>27,345</td></tr>
+                    <tr><td>35</td><td>27,355</td></tr>
+                    <tr><td>36</td><td>27,365</td></tr>
+                    <tr><td>37</td><td>27,375</td></tr>
+                    <tr><td>38</td><td>27,385</td></tr>
+                    <tr><td>39</td><td>27,395</td></tr>
+                    <tr><td>40</td><td>27,405</td></tr>
+                </tbody>
+            </table>
+
+        </div>
+
+    </section>
+
+    <!-- =====================================
+         FREQUENTIE DATABASE
+    ====================================== -->
+
+    <section class="page" id="db">
+
+        <a class="back" href="#">
+            ← Terug naar menu
+        </a>
+
+        <h2>FREQUENTIE DATABASE</h2>
+
+        <div class="desc">
+            Kies een categorie of zoek een frequentie
+        </div>
+
+        <!-- CATEGORIEKEUZE -->
+
+        <input
+            class="db-radio"
+            type="radio"
+            name="db-category"
+            id="cat-aviation"
+        >
+
+        <input
+            class="db-radio"
+            type="radio"
+            name="db-category"
+            id="cat-ov"
+        >
+
+        <input
+            class="db-radio"
+            type="radio"
+            name="db-category"
+            id="cat-all"
+        >
+
+        <!-- GROTE CATEGORIEKNOPPEN -->
+
+        <div class="category-grid">
+
+            <label
+                class="category-button"
+                for="cat-aviation"
+            >
+                <span class="category-icons">
+                    ✈️
+                </span>
+
+                <span class="category-title">
+                    AVIATION
+                </span>
+
+                <span class="category-count">
+                    4 frequenties
+                </span>
+            </label>
+
+            <label
+                class="category-button"
+                for="cat-ov"
+            >
+                <span class="category-icons">
+                    🚌 🚆
+                </span>
+
+                <span class="category-title">
+                    OPENBAAR VERVOER
+                </span>
+
+                <span class="category-count">
+                    5 frequenties
+                </span>
+            </label>
+
+        </div>
+
+        <!-- ALLE FREQUENTIES -->
+
+        <div class="db-toolbar">
+            <label
+                class="action-button"
+                for="cat-all"
+            >
+                ALLE FREQUENTIES
+            </label>
+        </div>
+
+        <!-- ZOEKVELD -->
+
+        <input
+            id="frequency-search"
+            class="search-input"
+            type="search"
+            placeholder="Zoek frequentie, naam of toon..."
+            autocomplete="off"
+        >
+
+        <div class="db-count" id="db-count">
+            Selecteer een categorie.
+        </div>
+
+        <!-- RESULTATEN -->
+
+        <div id="db-results">
+
+            <div class="scroll">
+
+                <table id="db-table">
+
+                    <thead>
+                        <tr>
+                            <th>FREQUENTIE</th>
+                            <th>NAAM</th>
+                            <th>TOONMODUS</th>
+                            <th>TOON</th>
+                            <th>DUPLEX</th>
+                            <th>Offset/TX Freq</th>
+                            <th>Mode</th>
+                            <th>Vermogen</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <!-- RADIOAMATEURS -->
+
+                        <tr data-category="overig">
+                            <td>145,57500</td>
+                            <td>PI3UTR RX (Utrecht)</td>
+                            <td>Tone</td>
+                            <td>77,0</td>
+                            <td>-</td>
+                            <td>0,600000</td>
+                            <td>FM</td>
+                            <td>High</td>
+                        </tr>
+
+                        <tr data-category="overig">
+                            <td>144,97500</td>
+                            <td>PI3UTR TX (Utrecht)</td>
+                            <td>Tone</td>
+                            <td>77,0</td>
+                            <td></td>
+                            <td></td>
+                            <td>FM</td>
+                            <td>High</td>
+                        </tr>
+
+                        <tr data-category="overig">
+                            <td>145,62500</td>
+                            <td>PI3AMF RX (Amersfoort)</td>
+                            <td></td>
+                            <td></td>
+                            <td>-</td>
+                            <td>0,600000</td>
+                            <td>FM</td>
+                            <td>High</td>
+                        </tr>
+
+                        <tr data-category="overig">
+                            <td>430,07500</td>
+                            <td>PI3ZST RX (Zeist)</td>
+                            <td></td>
+                            <td></td>
+                            <td>+</td>
+                            <td>1,600000</td>
+                            <td>FM</td>
+                            <td>High</td>
+                        </tr>
+
+                        <!-- AVIATION -->
+
+                        <tr data-category="aviation">
+                            <td>121,80000</td>
+                            <td>AMS GROUND</td>
+                            <td></td>
+                            <td></td>
+                            <td>off</td>
+                            <td></td>
+                            <td>AM</td>
+                            <td>High</td>
+                        </tr>
+
+                        <tr data-category="aviation">
+                            <td>119,22500</td>
+                            <td>AMS TOWER</td>
+                            <td></td>
+                            <td></td>
+                            <td>off</td>
+                            <td></td>
+                            <td>AM</td>
+                            <td>High</td>
+                        </tr>
+
+                        <tr data-category="aviation">
+                            <td>119,05000</td>
+                            <td>AMS APPROACH</td>
+                            <td></td>
+                            <td></td>
+                            <td>off</td>
+                            <td></td>
+                            <td>AM</td>
+                            <td>High</td>
+                        </tr>
+
+                        <tr data-category="aviation">
+                            <td>126,67500</td>
+                            <td>AMS APPROACH</td>
+                            <td></td>
+                            <td></td>
+                            <td>off</td>
+                            <td></td>
+                            <td>AM</td>
+                            <td>High</td>
+                        </tr>
+
+                        <!-- SCHEEPVAART -->
+
+                        <tr data-category="overig">
+                            <td>160,67500</td>
+                            <td>SLUIS WBD RX</td>
+                            <td></td>
+                            <td></td>
+                            <td>off</td>
+                            <td></td>
+                            <td>FM</td>
+                            <td>High</td>
+                        </tr>
+
+                        <tr data-category="overig">
+                            <td>156,67500</td>
+                            <td>SLUIS WBD TX</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>FM</td>
+                            <td>High</td>
+                        </tr>
+
+                        <!-- OPENBAAR VERVOER -->
+
+                        <tr data-category="ov">
+                            <td>429,88750</td>
+                            <td>NS open</td>
+                            <td></td>
+                            <td></td>
+                            <td>off</td>
+                            <td></td>
+                            <td>FM</td>
+                            <td>High</td>
+                        </tr>
+
+                        <tr data-category="ov">
+                            <td>429,88750</td>
+                            <td>NS CTCSS</td>
+                            <td>Tone</td>
+                            <td>136,5</td>
+                            <td></td>
+                            <td></td>
+                            <td>FM</td>
+                            <td>High</td>
+                        </tr>
+
+                        <tr data-category="ov">
+                            <td>429,85000</td>
+                            <td>NS s&amp;v</td>
+                            <td></td>
+                            <td></td>
+                            <td>off</td>
+                            <td></td>
+                            <td>FM</td>
+                            <td>High</td>
+                        </tr>
+
+                        <!-- ISS -->
+
+                        <tr data-category="overig">
+                            <td>145,80000</td>
+                            <td>ISS</td>
+                            <td></td>
+                            <td></td>
+                            <td>off</td>
+                            <td></td>
+                            <td>FM</td>
+                            <td>High</td>
+                        </tr>
+
+                        <!-- OPENBAAR VERVOER -->
+
+                        <tr data-category="ov">
+                            <td>419,87500</td>
+                            <td>SYNTUS 030</td>
+                            <td>Tone</td>
+                            <td>100,0</td>
+                            <td></td>
+                            <td></td>
+                            <td>FM</td>
+                            <td>High</td>
+                        </tr>
+
+                        <tr data-category="ov">
+                            <td>145,57500</td>
+                            <td>GVB Remise</td>
+                            <td>Tone</td>
+                            <td>162,2</td>
+                            <td></td>
+                            <td></td>
+                            <td>FM</td>
+                            <td>High</td>
+                        </tr>
+
+                        <!-- OVERIG -->
+
+                        <tr data-category="overig">
+                            <td>455,81</td>
+                            <td>McDon Neude</td>
+                            <td>Tone</td>
+                            <td>192,8</td>
+                            <td></td>
+                            <td></td>
+                            <td>FM</td>
+                            <td>High</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <div class="hint">
+                ← Veeg horizontaal voor alle kolommen →
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =====================================
+         RADIO ZENDAMATEUR
+    ====================================== -->
+
+    <section class="page" id="amateur">
+
+        <a class="back" href="#">
+            ← Terug naar menu
+        </a>
+
+        <h2>RADIO ZENDAMATEUR</h2>
+
+        <div class="desc">
+            Repeaters en amateurfrequenties –
+            regio Utrecht en IJsselstein
+        </div>
+
+        <!-- WEBS DR -->
+
+        <a
+            class="websdr-link"
+            href="http://websdr.pi1utr.hamnet.nl:8073/#freq=145575000,mod=nfm,sql=-150"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            📻 WebSDR+ ↗
+        </a>
+
+        <!-- REPEATERFREQUENTIES -->
+
+        <div class="scroll">
+
+            <table id="amateur-table">
+
+                <thead>
+                    <tr>
+                        <th>Repeater</th>
+                        <th>Locatie</th>
+                        <th>RX (MHz)</th>
+                        <th>TX (MHz)</th>
+                        <th>CTCSS / Code</th>
+                        <th>Mode</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr>
+                        <td>PI3UTR</td>
+                        <td>Gerbrandytoren, IJsselstein</td>
+                        <td>145,5750</td>
+                        <td>144,9750</td>
+                        <td>77,0 Hz</td>
+                        <td>FM</td>
+                    </tr>
+
+                    <tr>
+                        <td>PI1UTR DMR</td>
+                        <td>Gerbrandytoren, IJsselstein</td>
+                        <td>438,3500</td>
+                        <td>430,7500</td>
+                        <td>CC1</td>
+                        <td>DMR</td>
+                    </tr>
+
+                    <tr>
+                        <td>PI1UTR D-STAR</td>
+                        <td>Gerbrandytoren, IJsselstein</td>
+                        <td>438,0750</td>
+                        <td>430,4750</td>
+                        <td>Digitaal</td>
+                        <td>D-STAR</td>
+                    </tr>
+
+                    <tr>
+                        <td>PI3AMF</td>
+                        <td>Amersfoort – locatie indicatief</td>
+                        <td>145,6250</td>
+                        <td>145,0250</td>
+                        <td>Controleren</td>
+                        <td>FM</td>
+                    </tr>
+
+                    <tr>
+                        <td>PI3ZST</td>
+                        <td>Zeist – locatie indicatief</td>
+                        <td>430,0750</td>
+                        <td>431,6750</td>
+                        <td>—</td>
+                        <td>FM</td>
+                    </tr>
+
+                    <tr>
+                        <td>PI6ATV</td>
+                        <td>Gerbrandytoren, IJsselstein</td>
+                        <td>10475,0000</td>
+                        <td>—</td>
+                        <td>n.v.t.</td>
+                        <td>ATV FM</td>
+                    </tr>
+
+                    <tr>
+                        <td>PI6ATV</td>
+                        <td>Gerbrandytoren, IJsselstein</td>
+                        <td>10290,0000</td>
+                        <td>—</td>
+                        <td>n.v.t.</td>
+                        <td>DVB-S2</td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <!-- =================================
+             INTERACTIEVE REPEATERKAART
+        ================================== -->
+
+        <h2>REPEATERKAART UTRECHT</h2>
+
+        <div class="desc">
+            Klik op een markering voor de repeatergegevens.
+            De Gerbrandytoren staat bij IJsselstein.
+        </div>
+
+        <div class="map-controls">
+
+            <button
+                type="button"
+                class="action-button"
+                id="toggle-coverage"
+            >
+                Verberg bereikcirkels
+            </button>
+
+            <button
+                type="button"
+                class="action-button"
+                id="fit-repeaters"
+            >
+                Toon alle locaties
+            </button>
+
+            <button
+                type="button"
+                class="action-button"
+                id="focus-tower"
+            >
+                📍 Gerbrandytoren
+            </button>
+
+        </div>
+
+        <div
+            id="repeater-map"
+            role="region"
+            aria-label="Interactieve repeaterkaart"
+        ></div>
+
+        <div
+            class="map-status"
+            id="map-status"
+        >
+            De kaart wordt geladen wanneer
+            je deze pagina opent.
+        </div>
+
+        <!-- LEGENDA -->
+
+        <div class="map-legend">
+
+            <span class="legend-item">
+                <span
+                    class="legend-dot legend-confirmed"
+                ></span>
+                Gerbrandytoren
+            </span>
+
+            <span class="legend-item">
+                <span
+                    class="legend-dot legend-approximate"
+                ></span>
+                Indicatieve locatie
+            </span>
+
+        </div>
+
+        <div class="note">
+            De bereikcirkels zijn illustratieve
+            voorbeeldstralen, geen gemeten of
+            gegarandeerde radiodekking.
+            De exacte antenneposities van PI3AMF
+            en PI3ZST zijn niet bevestigd.
+        </div>
+
+        <!-- =================================
+             REPEATERKAARTJES
+        ================================== -->
+
+        <h2>REPEATERLOCATIES</h2>
+
+        <div class="repeater-list">
+
+            <!-- GERBRANDYTOREN -->
+
+            <div
+                class="repeater-card"
+                data-location="tower"
+            >
+                <strong>
+                    📍 Gerbrandytoren – IJsselstein
+                </strong>
+
+                <span>
+                    PI3UTR – 145,5750 MHz
+                </span>
+
+                <span>
+                    PI1UTR DMR – 438,3500 MHz
+                </span>
+
+                <span>
+                    PI1UTR D-STAR – 438,0750 MHz
+                </span>
+
+                <span>
+                    PI6ATV – 10475 / 10290 MHz
+                </span>
+
+                <span>
+                    Locatie: Hogebiezendijk, IJsselstein
+                </span>
+            </div>
+
+            <!-- AMERSFOORT -->
+
+            <div
+                class="repeater-card"
+                data-location="amf"
+            >
+                <strong>
+                    📍 PI3AMF – Amersfoort
+                </strong>
+
+                <span>
+                    RX: 145,6250 MHz
+                </span>
+
+                <span>
+                    TX: 145,0250 MHz
+                </span>
+
+                <span>
+                    Mode: FM
+                </span>
+
+                <span>
+                    Antennepositie nog niet bevestigd
+                </span>
+            </div>
+
+            <!-- ZEIST -->
+
+            <div
+                class="repeater-card"
+                data-location="zst"
+            >
+                <strong>
+                    📍 PI3ZST – Zeist
+                </strong>
+
+                <span>
+                    RX: 430,0750 MHz
+                </span>
+
+                <span>
+                    TX: 431,6750 MHz
+                </span>
+
+                <span>
+                    Mode: FM
+                </span>
+
+                <span>
+                    Antennepositie nog niet bevestigd
+                </span>
+            </div>
+
+        </div>
+
+        <div class="note">
+            RX = repeateruitgang waarop je luistert.
+            TX = repeateringang waarop je zendt.
+            Controleer de actuele frequenties en
+            toegangscodes bij de repeaterbeheerder
+            voordat je gaat zenden.
+        </div>
+
+    </section>
 
 </div>
 
+<!-- =========================================
+     JAVASCRIPT
+========================================= -->
+
 <script>
+"use strict";
+
 /* =========================================
-   LIVE KLOK
-   ========================================= */
+   LIVE KLOK EN DATUM
+========================================= */
 
 function updateClock() {
-  var now = new Date();
 
-  try {
-    var time = now.toLocaleTimeString('nl-NL', {
-      timeZone: 'Europe/Amsterdam',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false
-    });
+    var now = new Date();
 
-    var date = now.toLocaleDateString('nl-NL', {
-      timeZone: 'Europe/Amsterdam',
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
+    var clockTime = document.getElementById(
+        "clock-time"
+    );
 
-    document.getElementById('clock-time').textContent = time;
-    document.getElementById('clock-date').textContent =
-      date.replace(/-/g, '/');
+    var clockDate = document.getElementById(
+        "clock-date"
+    );
 
-  } catch (error) {
-    function pad(n) {
-      return ('0' + n).slice(-2);
+    try {
+
+        var time = now.toLocaleTimeString(
+            "nl-NL",
+            {
+                timeZone: "Europe/Amsterdam",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                hour12: false
+            }
+        );
+
+        var date = now.toLocaleDateString(
+            "nl-NL",
+            {
+                timeZone: "Europe/Amsterdam",
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric"
+            }
+        );
+
+        clockTime.textContent = time;
+
+        clockDate.textContent = date.replace(
+            /-/g,
+            "/"
+        );
+
+    } catch (error) {
+
+        function pad(number) {
+            return ("0" + number).slice(-2);
+        }
+
+        clockTime.textContent =
+            pad(now.getHours()) + ":" +
+            pad(now.getMinutes()) + ":" +
+            pad(now.getSeconds());
+
+        clockDate.textContent =
+            pad(now.getDate()) + "/" +
+            pad(now.getMonth() + 1) + "/" +
+            now.getFullYear();
     }
-
-    document.getElementById('clock-time').textContent =
-      pad(now.getHours()) + ':' +
-      pad(now.getMinutes()) + ':' +
-      pad(now.getSeconds());
-
-    document.getElementById('clock-date').textContent =
-      pad(now.getDate()) + '/' +
-      pad(now.getMonth() + 1) + '/' +
-      now.getFullYear();
-  }
 }
 
 updateClock();
+
 setInterval(updateClock, 1000);
 
+
 /* =========================================
-   FREQUENTIE DATABASE ZOEKEN
-   ========================================= */
+   FREQUENTIE DATABASE ZOEKFUNCTIE
+========================================= */
 
-var searchInput =
-  document.getElementById('frequency-search');
+var searchInput = document.getElementById(
+    "frequency-search"
+);
 
-var categoryInputs =
-  document.querySelectorAll('.db-radio');
+var categoryInputs = document.querySelectorAll(
+    ".db-radio"
+);
 
-var databaseRows =
-  document.querySelectorAll('#db-table tbody tr');
+var databaseRows = document.querySelectorAll(
+    "#db-table tbody tr"
+);
 
-var countElement =
-  document.getElementById('db-count');
+var countElement = document.getElementById(
+    "db-count"
+);
 
 function updateDatabase() {
-  var query = searchInput.value
-    .toLowerCase()
-    .trim()
-    .replace(/,/g, '.');
 
-  var selected = '';
+    var query = searchInput.value
+        .toLowerCase()
+        .trim()
+        .replace(/,/g, ".");
 
-  for (var i = 0; i < categoryInputs.length; i++) {
-    if (categoryInputs[i].checked) {
-      selected = categoryInputs[i].id;
+    var selected = "";
+
+    categoryInputs.forEach(function(input) {
+
+        if (input.checked) {
+            selected = input.id;
+        }
+
+    });
+
+    /*
+       Als iemand direct zoekt zonder eerst
+       een categorie te kiezen, doorzoek
+       dan automatisch alle frequenties.
+    */
+
+    if (!selected && query.length > 0) {
+
+        document.getElementById(
+            "cat-all"
+        ).checked = true;
+
+        selected = "cat-all";
     }
-  }
 
-  if (!selected && query.length > 0) {
-    document.getElementById('cat-all').checked = true;
-    selected = 'cat-all';
-  }
+    var count = 0;
 
-  var count = 0;
+    databaseRows.forEach(function(row) {
 
-  for (var j = 0; j < databaseRows.length; j++) {
-    var row = databaseRows[j];
-    var category = row.getAttribute('data-category');
+        var category = row.getAttribute(
+            "data-category"
+        );
 
-    var categoryMatch =
-      selected === 'cat-all' ||
-      (selected === 'cat-aviation' &&
-       category === 'aviation') ||
-      (selected === 'cat-ov' &&
-       category === 'ov');
+        var categoryMatch =
+            selected === "cat-all" ||
 
-    var text = row.textContent
-      .toLowerCase()
-      .replace(/,/g, '.');
+            (
+                selected === "cat-aviation" &&
+                category === "aviation"
+            ) ||
 
-    var visible =
-      categoryMatch &&
-      (query === '' || text.indexOf(query) !== -1);
+            (
+                selected === "cat-ov" &&
+                category === "ov"
+            );
 
-    if (query !== '') {
-      row.style.display = visible ? 'table-row' : 'none';
+        var text = row.textContent
+            .toLowerCase()
+            .replace(/,/g, ".");
+
+        var searchMatch =
+            query === "" ||
+            text.indexOf(query) !== -1;
+
+        var visible =
+            categoryMatch &&
+            searchMatch;
+
+        /*
+           Zonder zoektekst bepaalt CSS
+           welke categorie zichtbaar is.
+
+           Met zoektekst worden de rijen
+           direct gefilterd.
+        */
+
+        if (query !== "") {
+
+            row.style.display = visible
+                ? "table-row"
+                : "none";
+
+        } else {
+
+            row.style.display = "";
+        }
+
+        if (visible) {
+            count++;
+        }
+
+    });
+
+    if (!selected) {
+
+        countElement.textContent =
+            "Selecteer een categorie.";
+
+    } else if (count === 1) {
+
+        countElement.textContent =
+            "1 frequentie gevonden";
+
     } else {
-      row.style.display = '';
+
+        countElement.textContent =
+            count + " frequenties gevonden";
     }
-
-    if (visible) count++;
-  }
-
-  if (!selected) {
-    countElement.textContent = 'Selecteer een categorie.';
-  } else {
-    countElement.textContent =
-      count + (count === 1
-        ? ' frequentie gevonden'
-        : ' frequenties gevonden');
-  }
 }
 
-searchInput.addEventListener('input', updateDatabase);
-
-for (var k = 0; k < categoryInputs.length; k++) {
-  categoryInputs[k].addEventListener(
-    'change',
+searchInput.addEventListener(
+    "input",
     updateDatabase
-  );
-}
+);
+
+categoryInputs.forEach(function(input) {
+
+    input.addEventListener(
+        "change",
+        updateDatabase
+    );
+
+});
 
 updateDatabase();
 
+
 /* =========================================
-   REPEATERKAART MET BEREIKCIRKELS
-   ========================================= */
+   REPEATERGEGEVENS VOOR DE KAART
+========================================= */
 
 /*
-  BELANGRIJK:
-  Coördinaten zijn indicatieve plaatslocaties.
-  radiusKm is alleen een voorbeeldstraal.
-  Het is GEEN werkelijke dekkingsberekening.
+   De Gerbrandytoren is op de torenlocatie
+   bij IJsselstein geplaatst.
+
+   PI3AMF en PI3ZST zijn voorlopig
+   op plaatsniveau weergegeven.
+
+   radiusKm is een voorbeeldstraal.
+   Dit is GEEN echte dekkingsberekening.
 */
 
-var repeaters = [
-  {
-    name: 'PI3UTR',
-    place: 'Utrecht',
-    lat: 52.0907,
-    lng: 5.1214,
-    radiusKm: 25,
-    color: '#6ee7a0',
-    info: 'RX 145,5750 MHz | TX 144,9750 MHz | FM | 77,0 Hz'
-  },
-  {
-    name: 'PI1UTR DMR',
-    place: 'Utrecht',
-    lat: 52.0970,
-    lng: 5.1300,
-    radiusKm: 20,
-    color: '#5ba8ff',
-    info: 'RX 438,3500 MHz | TX 430,7500 MHz | DMR | CC1'
-  },
-  {
-    name: 'PI1UTR D-STAR',
-    place: 'Utrecht',
-    lat: 52.0840,
-    lng: 5.1130,
-    radiusKm: 20,
-    color: '#b58cff',
-    info: 'RX 438,0750 MHz | TX 430,4750 MHz | D-STAR'
-  },
-  {
-    name: 'PI3AMF',
-    place: 'Amersfoort',
-    lat: 52.1561,
-    lng: 5.3878,
-    radiusKm: 25,
-    color: '#ffbf69',
-    info: 'RX 145,6250 MHz | TX 145,0250 MHz | FM'
-  },
-  {
-    name: 'PI3ZST',
-    place: 'Zeist',
-    lat: 52.0902,
-    lng: 5.2333,
-    radiusKm: 20,
-    color: '#ff8fa3',
-    info: 'RX 430,0750 MHz | TX 431,6750 MHz | FM'
-  },
-  {
-    name: 'PI6ATV',
-    place: 'IJsselstein',
-    lat: 52.0201,
-    lng: 5.0436,
-    radiusKm: 15,
-    color: '#f9e66d',
-    info: '10475 MHz ATV FM | 10290 MHz DVB-S2'
-  }
+var repeaterLocations = [
+
+    {
+        id: "tower",
+
+        name: "Gerbrandytoren",
+
+        place: "IJsselstein",
+
+        lat: 52.01005,
+
+        lng: 5.05355,
+
+        confirmed: true,
+
+        radiusKm: 35,
+
+        color: "#6ee7a0",
+
+        details: [
+            "PI3UTR – 145,5750 MHz – FM",
+            "PI1UTR DMR – 438,3500 MHz",
+            "PI1UTR D-STAR – 438,0750 MHz",
+            "PI6ATV – 10475 / 10290 MHz"
+        ]
+    },
+
+    {
+        id: "amf",
+
+        name: "PI3AMF",
+
+        place: "Amersfoort",
+
+        lat: 52.1561,
+
+        lng: 5.3878,
+
+        confirmed: false,
+
+        radiusKm: 20,
+
+        color: "#ffb45c",
+
+        details: [
+            "RX: 145,6250 MHz",
+            "TX: 145,0250 MHz",
+            "Mode: FM",
+            "Exacte antennepositie onbekend"
+        ]
+    },
+
+    {
+        id: "zst",
+
+        name: "PI3ZST",
+
+        place: "Zeist",
+
+        lat: 52.0902,
+
+        lng: 5.2333,
+
+        confirmed: false,
+
+        radiusKm: 15,
+
+        color: "#ffb45c",
+
+        details: [
+            "RX: 430,0750 MHz",
+            "TX: 431,6750 MHz",
+            "Mode: FM",
+            "Exacte antennepositie onbekend"
+        ]
+    }
+
 ];
 
+
+/* =========================================
+   KAARTVARIABELEN
+========================================= */
+
 var repeaterMap = null;
-var mapMarkers = {};
-var coverageCircles = [];
-var coverageVisible = true;
+
 var mapLoading = false;
 
+var mapMarkers = {};
+
+var coverageCircles = [];
+
+var coverageVisible = true;
+
+
+/* =========================================
+   LEAFLET LADEN
+========================================= */
+
 function loadLeaflet(callback) {
-  if (window.L) {
-    callback(null);
-    return;
-  }
 
-  var existing = document.getElementById('leaflet-script');
+    if (window.L) {
 
-  if (existing) {
-    existing.addEventListener('load', function() {
-      callback(null);
-    }, { once: true });
-    existing.addEventListener('error', function() {
-      callback(new Error('Kaartbibliotheek niet geladen'));
-    }, { once: true });
-    return;
-  }
+        callback(true);
 
-  var script = document.createElement('script');
-  script.id = 'leaflet-script';
-  script.src =
-    'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+        return;
+    }
 
-  script.onload = function() {
-    callback(window.L ? null :
-      new Error('Leaflet ontbreekt'));
-  };
+    var existingScript = document.getElementById(
+        "leaflet-script"
+    );
 
-  script.onerror = function() {
-    callback(new Error('Kaartbibliotheek niet geladen'));
-  };
+    if (existingScript) {
 
-  document.head.appendChild(script);
+        existingScript.addEventListener(
+            "load",
+            function() {
+                callback(!!window.L);
+            },
+            { once: true }
+        );
+
+        existingScript.addEventListener(
+            "error",
+            function() {
+                callback(false);
+            },
+            { once: true }
+        );
+
+        return;
+    }
+
+    var script = document.createElement(
+        "script"
+    );
+
+    script.id = "leaflet-script";
+
+    script.src =
+        "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+
+    script.onload = function() {
+
+        callback(!!window.L);
+
+    };
+
+    script.onerror = function() {
+
+        callback(false);
+
+    };
+
+    document.head.appendChild(script);
 }
+
+
+/* =========================================
+   KAART INITIALISEREN
+========================================= */
 
 function initializeMap() {
-  if (repeaterMap) {
-    setTimeout(function() {
-      repeaterMap.invalidateSize();
-    }, 150);
-    return;
-  }
 
-  if (mapLoading) return;
-  mapLoading = true;
+    if (repeaterMap) {
 
-  var status = document.getElementById('map-status');
-  status.textContent = 'Repeaterkaart laden...';
+        setTimeout(function() {
 
-  loadLeaflet(function(error) {
-    mapLoading = false;
+            repeaterMap.invalidateSize();
 
-    if (error || !window.L) {
-      status.textContent =
-        'De kaart kon niet worden geladen. ' +
-        'Controleer je internetverbinding. ' +
-        'De repeatergegevens staan onder de kaart.';
-      return;
+        }, 150);
+
+        return;
     }
 
-    try {
-      repeaterMap = L.map('repeater-map', {
-        scrollWheelZoom: false
-      }).setView([52.09, 5.19], 10);
+    if (mapLoading) {
+        return;
+    }
 
-      L.tileLayer(
-        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        {
-          maxZoom: 19,
-          attribution: '&copy; OpenStreetMap-bijdragers'
+    mapLoading = true;
+
+    var status = document.getElementById(
+        "map-status"
+    );
+
+    status.textContent =
+        "OpenStreetMap wordt geladen...";
+
+    loadLeaflet(function(success) {
+
+        mapLoading = false;
+
+        if (!success) {
+
+            status.textContent =
+                "De kaart kon niet worden geladen. " +
+                "Controleer je internetverbinding.";
+
+            return;
         }
-      ).addTo(repeaterMap);
 
-      var bounds = [];
+        try {
 
-      repeaters.forEach(function(r) {
-        var point = [r.lat, r.lng];
+            repeaterMap = L.map(
+                "repeater-map",
+                {
+                    scrollWheelZoom: false
+                }
+            ).setView(
+                [52.07, 5.19],
+                10
+            );
 
-        var marker = L.circleMarker(point, {
-          radius: 9,
-          color: '#ffffff',
-          weight: 2,
-          fillColor: r.color,
-          fillOpacity: 1
-        }).addTo(repeaterMap);
+            /* OPENSTREETMAP */
 
-        marker.bindPopup(
-          '<strong>' + r.name + '</strong><br>' +
-          r.place + '<br>' +
-          r.info + '<br>' +
-          '<small>Indicatieve plaatslocatie</small>'
-        );
+            L.tileLayer(
+                "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+                    maxZoom: 19,
 
-        marker.bindTooltip(r.name);
+                    attribution:
+                        "&copy; OpenStreetMap-bijdragers"
+                }
+            ).addTo(repeaterMap);
 
-        var circle = L.circle(point, {
-          radius: r.radiusKm * 1000,
-          color: r.color,
-          weight: 2,
-          fillColor: r.color,
-          fillOpacity: 0.08
-        }).addTo(repeaterMap);
+            /* REPEATERS TOEVOEGEN */
 
-        circle.bindPopup(
-          '<strong>' + r.name + '</strong><br>' +
-          'Voorbeeldstraal: ' + r.radiusKm + ' km<br>' +
-          '<small>Geen gemeten radiodekking</small>'
-        );
+            repeaterLocations.forEach(
+                function(repeater) {
 
-        coverageCircles.push(circle);
-        mapMarkers[r.name] = marker;
-        bounds.push(point);
-      });
+                    var point = [
+                        repeater.lat,
+                        repeater.lng
+                    ];
 
-      repeaterMap.fitBounds(bounds, {
-        padding: [45, 45],
-        maxZoom: 10
-      });
+                    /* MARKERING */
 
-      status.textContent =
-        'Klik op een gekleurde stip voor de repeatergegevens. ' +
-        'De cirkels zijn indicatieve voorbeeldstralen.';
+                    var marker = L.circleMarker(
+                        point,
+                        {
+                            radius:
+                                repeater.confirmed
+                                    ? 12
+                                    : 9,
 
-      setTimeout(function() {
-        repeaterMap.invalidateSize();
-      }, 200);
+                            color: "#ffffff",
 
-    } catch (e) {
-      status.textContent =
-        'Er is een fout opgetreden bij het openen van de kaart.';
-    }
-  });
+                            weight: 2,
+
+                            fillColor: repeater.color,
+
+                            fillOpacity: 1
+                        }
+                    ).addTo(repeaterMap);
+
+                    /* POP-UP */
+
+                    var popupContent =
+                        "<strong>" +
+                        repeater.name +
+                        "</strong><br>" +
+
+                        repeater.place +
+                        "<br><br>" +
+
+                        repeater.details.join(
+                            "<br>"
+                        ) +
+
+                        "<br><br><small>" +
+
+                        (
+                            repeater.confirmed
+
+                                ? "Locatie: Gerbrandytoren"
+
+                                : "Indicatieve plaatslocatie"
+                        ) +
+
+                        "</small>";
+
+                    marker.bindPopup(
+                        popupContent,
+                        {
+                            maxWidth: 290
+                        }
+                    );
+
+                    marker.bindTooltip(
+                        repeater.name
+                    );
+
+                    mapMarkers[repeater.id] =
+                        marker;
+
+                    /* BEREIKCIRKEL */
+
+                    var circle = L.circle(
+                        point,
+                        {
+                            radius:
+                                repeater.radiusKm *
+                                1000,
+
+                            color: repeater.color,
+
+                            weight: 2,
+
+                            fillColor:
+                                repeater.color,
+
+                            fillOpacity: 0.07,
+
+                            dashArray: "6,5"
+                        }
+                    ).addTo(repeaterMap);
+
+                    circle.bindPopup(
+                        "<strong>" +
+                        repeater.name +
+                        "</strong><br>" +
+
+                        "Voorbeeldstraal: " +
+                        repeater.radiusKm +
+                        " km<br>" +
+
+                        "<small>" +
+                        "Geen gemeten radiodekking" +
+                        "</small>"
+                    );
+
+                    coverageCircles.push(
+                        circle
+                    );
+
+                }
+            );
+
+            /* ALLE LOCATIES IN BEELD */
+
+            repeaterMap.fitBounds(
+                repeaterLocations.map(
+                    function(repeater) {
+
+                        return [
+                            repeater.lat,
+                            repeater.lng
+                        ];
+
+                    }
+                ),
+                {
+                    padding: [40, 40],
+                    maxZoom: 10
+                }
+            );
+
+            status.textContent =
+                "Groen = Gerbrandytoren. " +
+                "Oranje = indicatieve locatie. " +
+                "Klik op een markering voor informatie.";
+
+            setTimeout(function() {
+
+                repeaterMap.invalidateSize();
+
+            }, 200);
+
+        } catch (error) {
+
+            status.textContent =
+                "Er is een probleem opgetreden " +
+                "bij het openen van de kaart.";
+
+        }
+
+    });
+
 }
 
-document.getElementById('toggle-coverage')
-  .addEventListener('click', function() {
+
+/* =========================================
+   INZOOMEN OP REPEATER
+========================================= */
+
+function focusLocation(locationId) {
+
     if (!repeaterMap) {
-      initializeMap();
-      return;
-    }
 
-    coverageVisible = !coverageVisible;
-
-    coverageCircles.forEach(function(circle) {
-      if (coverageVisible) {
-        circle.addTo(repeaterMap);
-      } else {
-        repeaterMap.removeLayer(circle);
-      }
-    });
-
-    this.textContent = coverageVisible
-      ? 'Verberg bereikcirkels'
-      : 'Toon bereikcirkels';
-  });
-
-document.getElementById('fit-repeaters')
-  .addEventListener('click', function() {
-    if (!repeaterMap) {
-      initializeMap();
-      return;
-    }
-
-    repeaterMap.fitBounds(
-      repeaters.map(function(r) {
-        return [r.lat, r.lng];
-      }),
-      { padding: [45, 45], maxZoom: 10 }
-    );
-  });
-
-document.querySelectorAll('[data-repeater]')
-  .forEach(function(card) {
-    card.addEventListener('click', function() {
-      var name = card.getAttribute('data-repeater');
-
-      if (!repeaterMap) {
         initializeMap();
+
         return;
-      }
+    }
 
-      var marker = mapMarkers[name];
+    var marker = mapMarkers[
+        locationId
+    ];
 
-      if (marker) {
-        repeaterMap.setView(marker.getLatLng(), 11);
-        marker.openPopup();
+    if (!marker) {
+        return;
+    }
 
-        document.getElementById('repeater-map')
-          .scrollIntoView({ behavior: 'smooth' });
-      }
-    });
-  });
+    var zoomLevel =
+        locationId === "tower"
+            ? 13
+            : 11;
 
-/* Kaart laden zodra Radio Zendamateur wordt geopend */
+    repeaterMap.setView(
+        marker.getLatLng(),
+        zoomLevel
+    );
+
+    marker.openPopup();
+
+    document.getElementById(
+        "repeater-map"
+    ).scrollIntoView(
+        {
+            behavior: "smooth",
+            block: "center"
+        }
+    );
+}
+
+
+/* =========================================
+   KNOP: GERBRANDYTOREN
+========================================= */
+
+document.getElementById(
+    "focus-tower"
+).addEventListener(
+    "click",
+    function() {
+
+        focusLocation("tower");
+
+    }
+);
+
+
+/* =========================================
+   KNOP: ALLE LOCATIES
+========================================= */
+
+document.getElementById(
+    "fit-repeaters"
+).addEventListener(
+    "click",
+    function() {
+
+        if (!repeaterMap) {
+
+            initializeMap();
+
+            return;
+        }
+
+        var bounds = repeaterLocations.map(
+            function(repeater) {
+
+                return [
+                    repeater.lat,
+                    repeater.lng
+                ];
+
+            }
+        );
+
+        repeaterMap.fitBounds(
+            bounds,
+            {
+                padding: [40, 40],
+                maxZoom: 10
+            }
+        );
+
+    }
+);
+
+
+/* =========================================
+   KNOP: BEREIKCIRKELS
+========================================= */
+
+document.getElementById(
+    "toggle-coverage"
+).addEventListener(
+    "click",
+    function() {
+
+        if (!repeaterMap) {
+
+            initializeMap();
+
+            return;
+        }
+
+        coverageVisible =
+            !coverageVisible;
+
+        coverageCircles.forEach(
+            function(circle) {
+
+                if (coverageVisible) {
+
+                    circle.addTo(
+                        repeaterMap
+                    );
+
+                } else {
+
+                    repeaterMap.removeLayer(
+                        circle
+                    );
+
+                }
+
+            }
+        );
+
+        this.textContent =
+            coverageVisible
+
+                ? "Verberg bereikcirkels"
+
+                : "Toon bereikcirkels";
+
+    }
+);
+
+
+/* =========================================
+   REPEATERKAARTJES KLIKBAAR MAKEN
+========================================= */
+
+document.querySelectorAll(
+    "[data-location]"
+).forEach(
+    function(card) {
+
+        card.addEventListener(
+            "click",
+            function() {
+
+                var locationId =
+                    card.getAttribute(
+                        "data-location"
+                    );
+
+                focusLocation(
+                    locationId
+                );
+
+            }
+        );
+
+    }
+);
+
+
+/* =========================================
+   KAART OPENEN BIJ RADIO ZENDAMATEUR
+========================================= */
 
 function checkPage() {
-  if (window.location.hash === '#amateur') {
-    initializeMap();
-  }
+
+    if (
+        window.location.hash ===
+        "#amateur"
+    ) {
+
+        initializeMap();
+
+    }
 }
 
-window.addEventListener('hashchange', checkPage);
+window.addEventListener(
+    "hashchange",
+    checkPage
+);
+
 checkPage();
 
 </script>
