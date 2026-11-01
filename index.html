@@ -6,23 +6,47 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>DV HAM RADIO</title>
 
+<link rel="stylesheet"
+ href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+ integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyo4MEjO0b2YY0i8="
+ crossorigin="">
+
 <style>
+:root {
+  --bg: #080f19;
+  --panel: #0b1420;
+  --card: #172638;
+  --card-hover: #22384e;
+  --border: #34485e;
+  --green: #6ee7a0;
+  --muted: #9caec1;
+  --white: #f1f5f9;
+}
+
 * {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  background: #080f19;
-  color: #f1f5f9;
-  font-family: Arial, sans-serif;
+  background: var(--bg);
+  color: var(--white);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+button, input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
 }
 
 .app {
   max-width: 950px;
   margin: 18px auto;
   padding: 20px 14px 28px;
-  background: #0b1420;
+  background: var(--panel);
   border: 1px solid #293b4d;
   border-radius: 15px;
   min-height: 90vh;
@@ -40,7 +64,7 @@ h1 {
 }
 
 h1 span {
-  color: #6ee7a0;
+  color: var(--green);
 }
 
 .rule {
@@ -62,22 +86,18 @@ h1 span {
   gap: 13px;
   width: 100%;
   padding: 16px 13px;
-  background: #172638;
-  border: 1px solid #34485e;
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: 12px;
   color: white;
   text-align: left;
-  cursor: pointer;
-  transition: background 0.2s;
+  transition: background .2s;
 }
 
-.menu:hover {
-  background: #22384e;
-}
-
-.menu:active,
-.back:active {
-  background: #29445d;
+.menu:hover,
+.category-button:hover,
+.action-button:hover {
+  background: var(--card-hover);
 }
 
 .ico {
@@ -100,28 +120,28 @@ h1 span {
 .sub {
   display: block;
   font-size: 12px;
-  color: #9caec1;
+  color: var(--muted);
   margin-top: 4px;
 }
 
 .arrow {
   margin-left: auto;
   font-size: 24px;
-  color: #6ee7a0;
+  color: var(--green);
 }
 
 .creator-credit {
   margin-top: 25px;
   padding: 20px 15px;
-  background: #172638;
-  border: 1px solid #34485e;
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: 12px;
   text-align: center;
 }
 
 .creator-credit span {
   display: block;
-  color: #9caec1;
+  color: var(--muted);
   font-size: 12px;
   font-weight: bold;
   letter-spacing: 2px;
@@ -130,9 +150,47 @@ h1 span {
 
 .creator-credit strong {
   display: block;
-  color: #6ee7a0;
+  color: var(--green);
   font-size: 23px;
   font-weight: 800;
+}
+
+.clock-box {
+  padding: 20px 15px;
+  background: #101e2e;
+  border: 1px solid #416c5b;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.clock-label {
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 1.7px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.clock-time {
+  color: var(--green);
+  font-size: clamp(31px, 8vw, 42px);
+  font-weight: 800;
+  letter-spacing: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.clock-date {
+  margin-top: 8px;
+  color: white;
+  font-size: 19px;
+  font-weight: bold;
+  font-variant-numeric: tabular-nums;
+}
+
+.clock-zone {
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 9px;
 }
 
 .page {
@@ -140,12 +198,11 @@ h1 span {
 }
 
 .back {
-  background: #172638;
-  border: 1px solid #34485e;
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: 8px;
   color: #9ce6b6;
   padding: 10px 13px;
-  cursor: pointer;
 }
 
 h2 {
@@ -155,7 +212,7 @@ h2 {
 
 .desc {
   font-size: 12px;
-  color: #9caec1;
+  color: var(--muted);
   margin-bottom: 14px;
 }
 
@@ -171,8 +228,7 @@ table {
   font-size: 13px;
 }
 
-th,
-td {
+th, td {
   border: 1px solid #4b6074;
   padding: 9px 10px;
   text-align: left;
@@ -237,10 +293,11 @@ tbody tr:nth-child(even) td {
   min-width: 730px;
 }
 
-.hint {
+.hint, .note {
   color: #91a9bd;
-  font-size: 11px;
-  margin-top: 9px;
+  font-size: 12px;
+  line-height: 1.6;
+  margin-top: 10px;
 }
 
 .websdr-link {
@@ -259,14 +316,154 @@ tbody tr:nth-child(even) td {
   background: #25865d;
 }
 
-.note {
-  color: #9caec1;
-  font-size: 12px;
-  line-height: 1.6;
-  margin-top: 13px;
+/* DATABASE CATEGORIEËN */
+
+.category-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 18px 0 12px;
 }
 
-@media (max-width: 390px) {
+.category-button {
+  min-height: 112px;
+  padding: 16px 10px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 9px;
+}
+
+.category-button.active {
+  border-color: var(--green);
+  background: #173d32;
+}
+
+.category-icons {
+  font-size: 28px;
+  line-height: 1.2;
+}
+
+.category-title {
+  color: var(--green);
+  font-weight: 800;
+  font-size: 13px;
+  text-align: center;
+}
+
+.category-count {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.action-button {
+  background: var(--card);
+  color: var(--green);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 11px 14px;
+  font-weight: bold;
+}
+
+.action-button.active {
+  border-color: var(--green);
+  background: #173d32;
+}
+
+.database-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.search-input {
+  width: 100%;
+  padding: 13px 14px;
+  background: #101e2e;
+  border: 1px solid #496176;
+  border-radius: 9px;
+  color: white;
+  outline: none;
+}
+
+.search-input:focus {
+  border-color: var(--green);
+}
+
+.search-input::placeholder {
+  color: #8b9eaf;
+}
+
+.search-result-count {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 10px 0;
+}
+
+.empty-message {
+  padding: 22px;
+  color: var(--muted);
+  text-align: center;
+  background: var(--card);
+  border-radius: 10px;
+}
+
+/* REPEATERKAART */
+
+#repeater-map {
+  width: 100%;
+  height: 410px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #142334;
+  margin: 15px 0;
+  z-index: 0;
+}
+
+.map-info {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  margin-top: 12px;
+}
+
+.map-info h3 {
+  margin: 0 0 9px;
+  color: var(--green);
+  font-size: 16px;
+}
+
+.map-info p {
+  margin: 5px 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.map-info strong {
+  color: #c5e8d4;
+}
+
+.map-warning {
+  background: #172638;
+  padding: 13px;
+  border-radius: 9px;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.leaflet-container {
+  font-family: Arial, sans-serif;
+}
+
+@media (max-width: 480px) {
   .app {
     margin: 0;
     border-radius: 0;
@@ -285,6 +482,14 @@ tbody tr:nth-child(even) td {
   .cb-grid td {
     padding: 6px 2px;
   }
+
+  .category-title {
+    font-size: 11px;
+  }
+
+  #repeater-map {
+    height: 340px;
+  }
 }
 </style>
 </head>
@@ -302,20 +507,18 @@ tbody tr:nth-child(even) td {
 
   <main id="home">
 
-    <!-- UNIDEN -->
-
     <button class="menu" data-page="banks">
       <span class="ico">
         <svg width="29" height="34"
-             viewBox="0 0 28 36"
-             fill="none"
-             stroke="currentColor"
-             stroke-width="1.6">
+          viewBox="0 0 28 36"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6">
           <path d="M9 10V2h3v8"/>
           <rect x="5" y="10"
-                width="19" height="24" rx="3"/>
+            width="19" height="24" rx="3"/>
           <rect x="8" y="14"
-                width="13" height="7" rx="1"/>
+            width="13" height="7" rx="1"/>
           <path d="M10 24h9M10 27h9M10 30h9"/>
         </svg>
       </span>
@@ -326,17 +529,15 @@ tbody tr:nth-child(even) td {
       <span class="arrow">›</span>
     </button>
 
-    <!-- CB RADIO -->
-
     <button class="menu" data-page="cb">
       <span class="ico">
         <svg width="27" height="27"
-             viewBox="0 0 24 24"
-             fill="none"
-             stroke="currentColor"
-             stroke-width="1.7">
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.7">
           <rect x="3" y="8"
-                width="18" height="12" rx="2"/>
+            width="18" height="12" rx="2"/>
           <path d="M7 8 15 3M7 12h7M7 15h5"/>
           <circle cx="17" cy="15" r="2"/>
         </svg>
@@ -348,60 +549,89 @@ tbody tr:nth-child(even) td {
       <span class="arrow">›</span>
     </button>
 
-    <!-- FREQUENTIE DATABASE -->
-
     <button class="menu" data-page="db">
       <span class="ico">
         <svg width="27" height="27"
-             viewBox="0 0 24 24"
-             fill="none"
-             stroke="currentColor"
-             stroke-width="1.6">
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6">
           <rect x="5" y="2"
-                width="14" height="20" rx="1.5"/>
-          <path d="M5 8h14M5 14h14M12 5h4M12 11h4M12 17h4"/>
-          <circle cx="8" cy="5" r="1" fill="currentColor"/>
-          <circle cx="8" cy="11" r="1" fill="currentColor"/>
-          <circle cx="8" cy="17" r="1" fill="currentColor"/>
+            width="14" height="20" rx="1.5"/>
+          <path d="M5 8h14M5 14h14
+                   M12 5h4M12 11h4M12 17h4"/>
+          <circle cx="8" cy="5" r="1"
+            fill="currentColor"/>
+          <circle cx="8" cy="11" r="1"
+            fill="currentColor"/>
+          <circle cx="8" cy="17" r="1"
+            fill="currentColor"/>
         </svg>
       </span>
-      <span class="name">FREQUENTIE DATABASE</span>
+      <span>
+        <span class="name">FREQUENTIE DATABASE</span>
+        <span class="sub">Categorieën en frequentie zoeken</span>
+      </span>
       <span class="arrow">›</span>
     </button>
-
-    <!-- RADIO ZENDAMATEUR -->
 
     <button class="menu" data-page="amateur">
       <span class="ico">
         <svg width="29" height="29"
-             viewBox="0 0 24 24"
-             fill="none"
-             stroke="currentColor"
-             stroke-width="1.6">
-          <path d="M12 3v18M8 21h8M12 7 5 21M12 7l7 14M9 13h6M7 17h10"/>
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6">
+          <path d="M12 3v18M8 21h8
+                   M12 7 5 21M12 7l7 14
+                   M9 13h6M7 17h10"/>
           <path d="M7.5 5a7 7 0 0 0 0 6
                    M16.5 5a7 7 0 0 1 0 6"/>
           <path d="M4.5 3a11 11 0 0 0 0 10
                    M19.5 3a11 11 0 0 1 0 10"/>
         </svg>
       </span>
-      <span class="name">RADIO ZENDAMATEUR</span>
+      <span>
+        <span class="name">RADIO ZENDAMATEUR</span>
+        <span class="sub">Repeaters en interactieve kaart</span>
+      </span>
       <span class="arrow">›</span>
     </button>
 
-    <!-- ONTWIKKELAAR -->
+    <!-- ONTWIKKELD DOOR -->
 
     <div class="creator-credit">
       <span>ONTWIKKELD DOOR</span>
       <strong>Daan Verburg</strong>
     </div>
 
+    <!-- LIVE KLOK -->
+
+    <div class="clock-box">
+      <div class="clock-label">
+        ACTUELE TIJD & DATUM
+      </div>
+
+      <div class="clock-time" id="clock-time">
+        --:--:--
+      </div>
+
+      <div class="clock-date" id="clock-date">
+        --/--/----
+      </div>
+
+      <div class="clock-zone">
+        Nederland · Europe/Amsterdam
+      </div>
+    </div>
+
   </main>
 
-  <!-- UNIDEN PAGINA -->
+  <!-- UNIDEN -->
 
   <section class="page" id="banks">
     <button class="back">← Terug naar menu</button>
+
     <h2>UNIDEN UBC125XLT</h2>
     <div class="desc">Bank inhoud</div>
 
@@ -416,12 +646,15 @@ tbody tr:nth-child(even) td {
     </table>
   </section>
 
-  <!-- CB PAGINA -->
+  <!-- 27MC / CB -->
 
   <section class="page" id="cb">
     <button class="back">← Terug naar menu</button>
+
     <h2>27MC / CB RADIO</h2>
-    <div class="desc">40 kanalen en frequenties</div>
+    <div class="desc">
+      Alle 40 kanalen en frequenties
+    </div>
 
     <div class="cb-grid">
       <table>
@@ -446,49 +679,109 @@ tbody tr:nth-child(even) td {
     </div>
   </section>
 
-  <!-- FREQUENTIE DATABASE PAGINA -->
+  <!-- FREQUENTIE DATABASE -->
 
   <section class="page" id="db">
     <button class="back">← Terug naar menu</button>
+
     <h2>FREQUENTIE DATABASE</h2>
-    <div class="desc">Frequentieoverzicht met logo's</div>
-
-    <div class="scroll">
-      <table id="db-table">
-        <thead>
-          <tr>
-            <th>FREQUENTIE</th>
-            <th>NAAM</th>
-            <th>TOONMODUS</th>
-            <th>TOON</th>
-            <th>DUPLEX</th>
-            <th>Offset/TX Freq</th>
-            <th>Mode</th>
-            <th>Vermogen</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+    <div class="desc">
+      Kies een categorie of zoek een frequentie
     </div>
 
-    <div class="hint">
-      ← Veeg horizontaal voor alle kolommen →
+    <div class="category-grid">
+
+      <button
+        class="category-button"
+        data-category="aviation"
+        type="button">
+        <span class="category-icons">✈️</span>
+        <span class="category-title">AVIATION</span>
+        <span class="category-count">4 frequenties</span>
+      </button>
+
+      <button
+        class="category-button"
+        data-category="ov"
+        type="button">
+        <span class="category-icons">🚌 🚆</span>
+        <span class="category-title">
+          OPENBAAR VERVOER
+        </span>
+        <span class="category-count">5 frequenties</span>
+      </button>
+
     </div>
+
+    <div class="database-toolbar">
+      <button
+        class="action-button"
+        id="show-all-db"
+        type="button">
+        ALLE FREQUENTIES
+      </button>
+    </div>
+
+    <input
+      id="frequency-search"
+      class="search-input"
+      type="search"
+      placeholder="Zoek frequentie, naam of toon..."
+      aria-label="Zoek frequentie"
+      autocomplete="off">
+
+    <div class="search-result-count"
+         id="search-result-count">
+      Selecteer een categorie of zoek een frequentie.
+    </div>
+
+    <div id="db-results" hidden>
+      <div class="scroll">
+        <table id="db-table">
+          <thead>
+            <tr>
+              <th>FREQUENTIE</th>
+              <th>NAAM</th>
+              <th>TOONMODUS</th>
+              <th>TOON</th>
+              <th>DUPLEX</th>
+              <th>Offset/TX Freq</th>
+              <th>Mode</th>
+              <th>Vermogen</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="hint">
+        ← Veeg horizontaal voor alle kolommen →
+      </div>
+    </div>
+
+    <div id="db-empty"
+         class="empty-message"
+         hidden>
+      Geen frequenties gevonden.
+    </div>
+
   </section>
 
-  <!-- RADIO ZENDAMATEUR PAGINA -->
+  <!-- RADIO ZENDAMATEUR -->
 
   <section class="page" id="amateur">
     <button class="back">← Terug naar menu</button>
+
     <h2>RADIO ZENDAMATEUR</h2>
     <div class="desc">
       Repeaters en amateurfrequenties – regio Utrecht
     </div>
 
-    <a class="websdr-link"
-       href="http://websdr.pi1utr.hamnet.nl:8073/#freq=145575000,mod=nfm,sql=-150"
-       target="_blank"
-       rel="noopener noreferrer">
+    <a
+      class="websdr-link"
+      href="http://websdr.pi1utr.hamnet.nl:8073/#freq=145575000,mod=nfm,sql=-150"
+      target="_blank"
+      rel="noopener noreferrer">
       📻 WebSDR+ ↗
     </a>
 
@@ -508,20 +801,48 @@ tbody tr:nth-child(even) td {
       </table>
     </div>
 
+    <h2>REPEATERKAART UTRECHT</h2>
+    <div class="desc">
+      Klik op een markering voor de repeatergegevens
+    </div>
+
+    <div id="repeater-map"
+         role="region"
+         aria-label="Interactieve repeaterkaart Utrecht">
+    </div>
+
+    <div class="map-warning" id="map-warning">
+      De markeringen geven indicatieve locaties weer,
+      niet de exacte antenneposities.
+      Voor de kaart is een internetverbinding nodig.
+    </div>
+
+    <div class="map-info" id="map-info">
+      <h3>Repeaterinformatie</h3>
+      <p>
+        Selecteer een repeater op de kaart om
+        de frequenties en instellingen te bekijken.
+      </p>
+    </div>
+
     <div class="note">
-      RX = uitgang van de repeater, waarop je luistert.
-      TX = ingang van de repeater, waarop je zendt.
-      Digitale repeaters kunnen een kleurcode gebruiken
-      in plaats van CTCSS.
-      Controleer actuele gegevens bij de repeaterbeheerder.
+      RX = repeateruitgang waarop je luistert.
+      TX = repeateringang waarop je zendt.
+      De repeatergegevens zijn voorlopig en niet
+      onafhankelijk geverifieerd. Controleer ze
+      vóór gebruik bij de repeaterbeheerder.
+      PI6ATV is amateurtelevisie.
     </div>
   </section>
 
 </div>
 
 <script>
+"use strict";
 
-// UNIDEN BANKEN
+// ==================================================
+// GEGEVENS
+// ==================================================
 
 const banks = [
   'aviation general',
@@ -536,8 +857,6 @@ const banks = [
   'Daans Favourites'
 ];
 
-// 27MC / CB RADIO
-
 const cb = [
   26.965,26.975,26.985,27.005,27.015,
   27.025,27.035,27.055,27.065,27.075,
@@ -548,8 +867,6 @@ const cb = [
   27.315,27.325,27.335,27.345,27.355,
   27.365,27.375,27.385,27.395,27.405
 ];
-
-// LOGO URL'S
 
 const logos = {
   schiphol:
@@ -566,37 +883,36 @@ const logos = {
 
   mc:
     'https://www.freepnglogos.com/uploads/mcdonalds-png-logo/mcdonalds-logo-image-png-4.png'
-};
-
-// FREQUENTIE DATABASE
-
-const db = [
-  ['145,57500','PI3UTR RX (Utrecht)','Tone','77,0','-','0,600000','FM','High'],
-  ['144,97500','PI3UTR TX (Utrecht)','Tone','77,0','','','FM','High'],
-  ['145,62500','PI3AMF RX (Amersfoort)','','','-','0,600000','FM','High'],
-  ['430,07500','PI3ZST RX (Zeist)','','','+','1,600000','FM','High'],
-
-  ['121,80000','AMS GROUND','','','off','','AM','High','schiphol'],
-  ['119,22500','AMS TOWER','','','off','','AM','High','schiphol'],
-  ['119,05000','AMS APPROACH','','','off','','AM','High','schiphol'],
-  ['126,67500','AMS APPROACH','','','off','','AM','High','schiphol'],
-
-  ['160,67500','SLUIS WBD RX','','','off','','FM','High'],
-  ['156,67500','SLUIS WBD TX','','','','','FM','High'],
-
-  ['429,88750','NS open','','','off','','FM','High','ns'],
-  ['429,88750','NS CTCSS','Tone','136,5','','','FM','High','ns'],
-  ['429,85000','NS s&v','','','off','','FM','High','ns'],
-
-  ['145,80000','ISS','','','off','','FM','High'],
-
-  ['419,87500','SYNTUS 030','Tone','100,0','','','FM','High','syntus'],
-  ['145,57500','GVB Remise','Tone','162,2','','','FM','High','gvb'],
-  ['455,81','McDon Neude','Tone','192,8','','','FM','High','mc']
 ];
 
-// RADIO ZENDAMATEUR
-// Voorlopige gegevens; controleer voor zendgebruik.
+// Elk item:
+// [freq, naam, toonmodus, toon, duplex,
+//  offset, mode, vermogen, logo, categorie]
+
+const db = [
+  ['145,57500','PI3UTR RX (Utrecht)','Tone','77,0','-','0,600000','FM','High','','overig'],
+  ['144,97500','PI3UTR TX (Utrecht)','Tone','77,0','','','FM','High','','overig'],
+  ['145,62500','PI3AMF RX (Amersfoort)','','','-','0,600000','FM','High','','overig'],
+  ['430,07500','PI3ZST RX (Zeist)','','','+','1,600000','FM','High','','overig'],
+
+  ['121,80000','AMS GROUND','','','off','','AM','High','schiphol','aviation'],
+  ['119,22500','AMS TOWER','','','off','','AM','High','schiphol','aviation'],
+  ['119,05000','AMS APPROACH','','','off','','AM','High','schiphol','aviation'],
+  ['126,67500','AMS APPROACH','','','off','','AM','High','schiphol','aviation'],
+
+  ['160,67500','SLUIS WBD RX','','','off','','FM','High','','overig'],
+  ['156,67500','SLUIS WBD TX','','','','','FM','High','','overig'],
+
+  ['429,88750','NS open','','','off','','FM','High','ns','ov'],
+  ['429,88750','NS CTCSS','Tone','136,5','','','FM','High','ns','ov'],
+  ['429,85000','NS s&v','','','off','','FM','High','ns','ov'],
+
+  ['145,80000','ISS','','','off','','FM','High','','overig'],
+
+  ['419,87500','SYNTUS 030','Tone','100,0','','','FM','High','syntus','ov'],
+  ['145,57500','GVB Remise','Tone','162,2','','','FM','High','gvb','ov'],
+  ['455,81','McDon Neude','Tone','192,8','','','FM','High','mc','overig']
+];
 
 const amateur = [
   ['PI3UTR','Utrecht','145,5750','144,9750','77,0 Hz','FM'],
@@ -608,84 +924,469 @@ const amateur = [
   ['PI6ATV','IJsselstein','10290,0000','—','n.v.t.','DVB-S2']
 ];
 
-// TABEL FUNCTIE
+// Indicatieve plaatscoördinaten.
+// Dit zijn GEEN exacte repeaterantennelocaties.
 
-function addCell(tr, text) {
+const repeaterLocations = [
+  {
+    name: 'PI3UTR',
+    place: 'Utrecht',
+    lat: 52.0907,
+    lng: 5.1214,
+    rows: [0]
+  },
+  {
+    name: 'PI1UTR DMR',
+    place: 'Utrecht',
+    lat: 52.095,
+    lng: 5.128,
+    rows: [1]
+  },
+  {
+    name: 'PI1UTR D-STAR',
+    place: 'Utrecht',
+    lat: 52.085,
+    lng: 5.114,
+    rows: [2]
+  },
+  {
+    name: 'PI3AMF',
+    place: 'Amersfoort',
+    lat: 52.1561,
+    lng: 5.3878,
+    rows: [3]
+  },
+  {
+    name: 'PI3ZST',
+    place: 'Zeist',
+    lat: 52.0902,
+    lng: 5.2333,
+    rows: [4]
+  },
+  {
+    name: 'PI6ATV',
+    place: 'IJsselstein',
+    lat: 52.0201,
+    lng: 5.0436,
+    rows: [5, 6]
+  }
+];
+
+// ==================================================
+// HULPFUNCTIES
+// ==================================================
+
+function addCell(tr, value) {
   const td = document.createElement('td');
-  td.textContent = text;
+  td.textContent = value;
   tr.append(td);
   return td;
 }
 
-// UNIDEN TABEL VULLEN
+function normalizeSearch(text) {
+  return String(text)
+    .toLowerCase()
+    .replaceAll(',', '.')
+    .trim();
+}
 
-banks.forEach((name, i) => {
+// ==================================================
+// UNIDEN BANKEN
+// ==================================================
+
+const bankBody =
+  document.querySelector('#banks-table tbody');
+
+banks.forEach((name, index) => {
   const tr = document.createElement('tr');
-
-  addCell(tr, i + 1);
+  addCell(tr, index + 1);
   addCell(tr, name);
-
-  document.querySelector('#banks-table tbody').append(tr);
+  bankBody.append(tr);
 });
 
-// CB TABELLEN VULLEN
+// ==================================================
+// CB RADIO
+// ==================================================
 
-cb.forEach((freq, i) => {
+cb.forEach((freq, index) => {
   const tr = document.createElement('tr');
 
-  addCell(tr, i + 1);
+  addCell(tr, index + 1);
   addCell(tr, freq.toFixed(3).replace('.', ','));
 
-  document.querySelector(
-    i < 20 ? '#cb-left' : '#cb-right'
-  ).append(tr);
+  const target = index < 20
+    ? document.querySelector('#cb-left')
+    : document.querySelector('#cb-right');
+
+  target.append(tr);
 });
 
-// FREQUENTIEDATABASE MET LOGO'S
+// ==================================================
+// FREQUENTIE DATABASE
+// ==================================================
 
-db.forEach(row => {
-  const tr = document.createElement('tr');
+let selectedCategory = null;
 
-  row.slice(0, 8).forEach((value, i) => {
-    const td = addCell(tr, value);
+const searchInput =
+  document.querySelector('#frequency-search');
 
-    if (i === 1 && row[8] && logos[row[8]]) {
-      td.textContent = '';
+const dbBody =
+  document.querySelector('#db-table tbody');
 
-      const wrap = document.createElement('div');
-      wrap.className = 'name-logo';
+const dbResults =
+  document.querySelector('#db-results');
 
-      const label = document.createElement('span');
-      label.textContent = value;
+const dbEmpty =
+  document.querySelector('#db-empty');
 
-      const img = document.createElement('img');
-      img.src = logos[row[8]];
-      img.alt = 'Logo ' + value;
-      img.loading = 'lazy';
+const resultCount =
+  document.querySelector('#search-result-count');
 
-      img.onerror = () => img.remove();
+const categoryButtons =
+  document.querySelectorAll('[data-category]');
 
-      wrap.append(label, img);
-      td.append(wrap);
-    }
+const showAllButton =
+  document.querySelector('#show-all-db');
+
+function updateCategoryButtons() {
+  categoryButtons.forEach(button => {
+    const active =
+      selectedCategory === button.dataset.category;
+
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', String(active));
   });
 
-  document.querySelector('#db-table tbody').append(tr);
+  const allActive = selectedCategory === 'all';
+
+  showAllButton.classList.toggle('active', allActive);
+  showAllButton.setAttribute(
+    'aria-pressed',
+    String(allActive)
+  );
+}
+
+function renderDatabase() {
+  const query = normalizeSearch(searchInput.value);
+
+  dbBody.replaceChildren();
+
+  // Zonder categorie of zoekopdracht:
+  // toon alleen de keuzeknoppen.
+  if (!selectedCategory && !query) {
+    dbResults.hidden = true;
+    dbEmpty.hidden = true;
+    resultCount.textContent =
+      'Selecteer een categorie of zoek een frequentie.';
+    return;
+  }
+
+  const matches = db.filter(row => {
+    const matchesCategory =
+      !selectedCategory ||
+      selectedCategory === 'all' ||
+      row[9] === selectedCategory;
+
+    const searchable = normalizeSearch(
+      row.slice(0, 8).join(' ')
+    );
+
+    const matchesSearch =
+      !query || searchable.includes(query);
+
+    return matchesCategory && matchesSearch;
+  });
+
+  matches.forEach(row => {
+    const tr = document.createElement('tr');
+
+    row.slice(0, 8).forEach((value, index) => {
+      const td = addCell(tr, value);
+
+      if (
+        index === 1 &&
+        row[8] &&
+        logos[row[8]]
+      ) {
+        td.textContent = '';
+
+        const wrap = document.createElement('div');
+        wrap.className = 'name-logo';
+
+        const label = document.createElement('span');
+        label.textContent = value;
+
+        const img = document.createElement('img');
+        img.src = logos[row[8]];
+        img.alt = 'Logo ' + value;
+        img.loading = 'lazy';
+        img.onerror = () => img.remove();
+
+        wrap.append(label, img);
+        td.append(wrap);
+      }
+    });
+
+    dbBody.append(tr);
+  });
+
+  dbResults.hidden = matches.length === 0;
+  dbEmpty.hidden = matches.length !== 0;
+
+  resultCount.textContent =
+    matches.length === 1
+      ? '1 frequentie gevonden'
+      : matches.length + ' frequenties gevonden';
+}
+
+categoryButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    selectedCategory = button.dataset.category;
+    searchInput.value = '';
+
+    updateCategoryButtons();
+    renderDatabase();
+  });
 });
 
-// RADIO ZENDAMATEUR TABEL VULLEN
+showAllButton.addEventListener('click', () => {
+  selectedCategory = 'all';
+  searchInput.value = '';
+
+  updateCategoryButtons();
+  renderDatabase();
+});
+
+searchInput.addEventListener('input', () => {
+  // Wanneer je rechtstreeks zoekt zonder categorie,
+  // wordt in de complete database gezocht.
+  renderDatabase();
+});
+
+updateCategoryButtons();
+renderDatabase();
+
+// ==================================================
+// RADIO ZENDAMATEUR TABEL
+// ==================================================
+
+const amateurBody =
+  document.querySelector('#amateur-table tbody');
 
 amateur.forEach(row => {
   const tr = document.createElement('tr');
 
   row.forEach(value => addCell(tr, value));
 
-  document.querySelector(
-    '#amateur-table tbody'
-  ).append(tr);
+  amateurBody.append(tr);
 });
 
-// PAGINA NAVIGATIE
+// ==================================================
+// REPEATERKAART
+// ==================================================
+
+let repeaterMap = null;
+let mapLoading = false;
+
+function showRepeaterInfo(location) {
+  const box = document.querySelector('#map-info');
+
+  box.replaceChildren();
+
+  const heading = document.createElement('h3');
+  heading.textContent =
+    location.name + ' – ' + location.place;
+
+  box.append(heading);
+
+  location.rows.forEach(index => {
+    const row = amateur[index];
+
+    const info = document.createElement('p');
+
+    const rx = document.createElement('strong');
+    rx.textContent = 'RX: ';
+
+    const tx = document.createElement('strong');
+    tx.textContent = ' | TX: ';
+
+    const mode = document.createElement('strong');
+    mode.textContent = ' | Mode: ';
+
+    const code = document.createElement('strong');
+    code.textContent = ' | Code: ';
+
+    info.append(
+      rx,
+      document.createTextNode(row[2] + ' MHz'),
+      tx,
+      document.createTextNode(row[3] + ' MHz'),
+      mode,
+      document.createTextNode(row[5]),
+      code,
+      document.createTextNode(row[4])
+    );
+
+    box.append(info);
+  });
+
+  const note = document.createElement('p');
+  note.style.color = '#9caec1';
+  note.style.fontSize = '11px';
+  note.textContent =
+    'Indicatieve kaartpositie; controleer actuele gegevens.';
+
+  box.append(note);
+}
+
+function loadLeaflet() {
+  return new Promise((resolve, reject) => {
+    if (window.L) {
+      resolve();
+      return;
+    }
+
+    const script = document.createElement('script');
+
+    script.src =
+      'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+
+    script.integrity =
+      'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=';
+
+    script.crossOrigin = '';
+
+    script.onload = () => {
+      if (window.L) {
+        resolve();
+      } else {
+        reject(new Error('Leaflet niet beschikbaar'));
+      }
+    };
+
+    script.onerror = reject;
+    document.head.append(script);
+  });
+}
+
+async function initializeRepeaterMap() {
+  if (repeaterMap) {
+    setTimeout(() => repeaterMap.invalidateSize(), 100);
+    return;
+  }
+
+  if (mapLoading) return;
+  mapLoading = true;
+
+  const warning =
+    document.querySelector('#map-warning');
+
+  try {
+    await loadLeaflet();
+
+    repeaterMap = L.map('repeater-map', {
+      scrollWheelZoom: false
+    }).setView([52.09, 5.19], 10);
+
+    L.tileLayer(
+      'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      {
+        maxZoom: 19,
+        attribution:
+          '&copy; OpenStreetMap-bijdragers'
+      }
+    ).addTo(repeaterMap);
+
+    const bounds = [];
+
+    repeaterLocations.forEach(location => {
+      const marker = L.marker([
+        location.lat,
+        location.lng
+      ]).addTo(repeaterMap);
+
+      marker.bindPopup(
+        '<strong>' + location.name + '</strong>' +
+        '<br>' + location.place +
+        '<br><small>Indicatieve locatie</small>'
+      );
+
+      marker.on('click', () => {
+        showRepeaterInfo(location);
+      });
+
+      bounds.push([location.lat, location.lng]);
+    });
+
+    repeaterMap.fitBounds(bounds, {
+      padding: [35, 35],
+      maxZoom: 11
+    });
+
+    setTimeout(() => {
+      repeaterMap.invalidateSize();
+    }, 150);
+
+  } catch (error) {
+    warning.textContent =
+      'De interactieve kaart kon niet worden geladen. ' +
+      'Controleer je internetverbinding. ' +
+      'De repeatergegevens staan hierboven in de tabel.';
+  } finally {
+    mapLoading = false;
+  }
+}
+
+// ==================================================
+// LIVE KLOK EN DATUM – NEDERLAND
+// ==================================================
+
+const timeFormatter = new Intl.DateTimeFormat(
+  'nl-NL',
+  {
+    timeZone: 'Europe/Amsterdam',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hourCycle: 'h23'
+  }
+);
+
+const dateFormatter = new Intl.DateTimeFormat(
+  'nl-NL',
+  {
+    timeZone: 'Europe/Amsterdam',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  }
+);
+
+function updateClock() {
+  const now = new Date();
+
+  document.querySelector('#clock-time').textContent =
+    timeFormatter.format(now);
+
+  // nl-NL geeft doorgaans dd-mm-jjjj.
+  // We tonen expliciet dag/maand/jaar met schuine strepen.
+  const parts = dateFormatter.formatToParts(now);
+
+  const getPart = type =>
+    parts.find(part => part.type === type)?.value || '';
+
+  document.querySelector('#clock-date').textContent =
+    getPart('day') + '/' +
+    getPart('month') + '/' +
+    getPart('year');
+}
+
+updateClock();
+setInterval(updateClock, 250);
+
+// ==================================================
+// NAVIGATIE
+// ==================================================
 
 function show(page) {
   document.querySelector('#home').style.display =
@@ -697,17 +1398,17 @@ function show(page) {
   });
 
   window.scrollTo(0, 0);
-}
 
-// MENUKNOPPEN
+  if (page === 'amateur') {
+    initializeRepeaterMap();
+  }
+}
 
 document.querySelectorAll('[data-page]').forEach(button => {
   button.addEventListener('click', () => {
     show(button.dataset.page);
   });
 });
-
-// TERUGKNOPPEN
 
 document.querySelectorAll('.back').forEach(button => {
   button.addEventListener('click', () => {
