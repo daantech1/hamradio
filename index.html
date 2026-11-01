@@ -5,14 +5,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>DV HAM RADIO</title>
+
 <style>
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   background: #080f19;
   color: #f1f5f9;
   font-family: Arial, sans-serif;
 }
+
 .app {
   max-width: 950px;
   margin: 18px auto;
@@ -20,21 +25,37 @@ body {
   background: #0b1420;
   border: 1px solid #293b4d;
   border-radius: 15px;
+  min-height: 90vh;
 }
-header { text-align: center; padding: 12px 0 20px; }
-h1 { font-size: 27px; margin: 0; font-weight: 800; }
-h1 span { color: #6ee7a0; }
+
+header {
+  text-align: center;
+  padding: 12px 0 20px;
+}
+
+h1 {
+  font-size: 27px;
+  margin: 0;
+  font-weight: 800;
+}
+
+h1 span {
+  color: #6ee7a0;
+}
+
 .rule {
   height: 2px;
   background: #32475a;
   margin-top: 19px;
 }
+
 #home {
   max-width: 480px;
   margin: auto;
   display: grid;
   gap: 13px;
 }
+
 .menu {
   display: flex;
   align-items: center;
@@ -47,8 +68,18 @@ h1 span { color: #6ee7a0; }
   color: white;
   text-align: left;
   cursor: pointer;
+  transition: background 0.2s;
 }
-.menu:active, .back:active { background: #29445d; }
+
+.menu:hover {
+  background: #22384e;
+}
+
+.menu:active,
+.back:active {
+  background: #29445d;
+}
+
 .ico {
   width: 46px;
   height: 46px;
@@ -60,10 +91,29 @@ h1 span { color: #6ee7a0; }
   justify-content: center;
   color: #8de4b0;
 }
-.name { font-size: 14px; font-weight: bold; }
-.sub { display: block; font-size: 12px; color: #9caec1; margin-top: 4px; }
-.arrow { margin-left: auto; font-size: 24px; color: #6ee7a0; }
-.page { display: none; }
+
+.name {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.sub {
+  display: block;
+  font-size: 12px;
+  color: #9caec1;
+  margin-top: 4px;
+}
+
+.arrow {
+  margin-left: auto;
+  font-size: 24px;
+  color: #6ee7a0;
+}
+
+.page {
+  display: none;
+}
+
 .back {
   background: #172638;
   border: 1px solid #34485e;
@@ -72,31 +122,78 @@ h1 span { color: #6ee7a0; }
   padding: 10px 13px;
   cursor: pointer;
 }
-h2 { font-size: 19px; margin: 22px 0 5px; }
-.desc { font-size: 12px; color: #9caec1; margin-bottom: 14px; }
+
+h2 {
+  font-size: 19px;
+  margin: 22px 0 5px;
+}
+
+.desc {
+  font-size: 12px;
+  color: #9caec1;
+  margin-bottom: 14px;
+}
+
 .scroll {
   overflow-x: auto;
   width: 100%;
   -webkit-overflow-scrolling: touch;
 }
-table { border-collapse: collapse; width: 100%; font-size: 13px; }
-th, td {
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 13px;
+}
+
+th,
+td {
   border: 1px solid #4b6074;
   padding: 9px 10px;
   text-align: left;
 }
-th { background: #263b50; color: #a3efbf; }
-td { background: #142334; }
-tbody tr:nth-child(even) td { background: #1a2b3e; }
+
+th {
+  background: #263b50;
+  color: #a3efbf;
+}
+
+td {
+  background: #142334;
+}
+
+tbody tr:nth-child(even) td {
+  background: #1a2b3e;
+}
+
 #banks-table th:first-child,
 #banks-table td:first-child {
   text-align: center;
   width: 65px;
 }
-.cb-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.cb-grid th, .cb-grid td { text-align: center; padding: 7px 4px; }
-#db-table { min-width: 970px; font-size: 12px; }
-#db-table td, #db-table th { white-space: nowrap; }
+
+.cb-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.cb-grid th,
+.cb-grid td {
+  text-align: center;
+  padding: 7px 4px;
+}
+
+#db-table {
+  min-width: 970px;
+  font-size: 12px;
+}
+
+#db-table td,
+#db-table th {
+  white-space: nowrap;
+}
+
 .name-logo {
   display: flex;
   align-items: center;
@@ -104,10 +201,24 @@ tbody tr:nth-child(even) td { background: #1a2b3e; }
   gap: 9px;
   min-width: 180px;
 }
-.name-logo img { max-width: 75px; max-height: 26px; object-fit: contain; }
-#amateur-table { min-width: 730px; }
-.hint { color: #91a9bd; font-size: 11px; margin-top: 9px; }
-.websdr {
+
+.name-logo img {
+  max-width: 75px;
+  max-height: 26px;
+  object-fit: contain;
+}
+
+#amateur-table {
+  min-width: 730px;
+}
+
+.hint {
+  color: #91a9bd;
+  font-size: 11px;
+  margin-top: 9px;
+}
+
+.websdr-link {
   display: inline-block;
   background: #1d704d;
   border: 1px solid #65d99a;
@@ -118,148 +229,292 @@ tbody tr:nth-child(even) td { background: #1a2b3e; }
   font-weight: bold;
   margin: 8px 0 15px;
 }
-.websdr:hover { background: #25865d; }
+
+.websdr-link:hover {
+  background: #25865d;
+}
+
+.websdr-frame {
+  width: 100%;
+  height: 75vh;
+  min-height: 500px;
+  border: 1px solid #34485e;
+  border-radius: 10px;
+  background: #101d2b;
+}
+
 .note {
   color: #9caec1;
   font-size: 12px;
-  line-height: 1.5;
+  line-height: 1.6;
   margin-top: 13px;
 }
-@media(max-width:390px) {
-  .app { margin: 0; border-radius: 0; min-height: 100vh; }
-  .cb-grid { gap: 5px; }
-  .cb-grid table { font-size: 11px; }
-  .cb-grid th, .cb-grid td { padding: 6px 2px; }
+
+.note a {
+  color: #6ee7a0;
+}
+
+@media (max-width: 390px) {
+  .app {
+    margin: 0;
+    border-radius: 0;
+    min-height: 100vh;
+  }
+
+  .cb-grid {
+    gap: 5px;
+  }
+
+  .cb-grid table {
+    font-size: 11px;
+  }
+
+  .cb-grid th,
+  .cb-grid td {
+    padding: 6px 2px;
+  }
+
+  .websdr-frame {
+    height: 70vh;
+    min-height: 400px;
+  }
 }
 </style>
 </head>
+
 <body>
 
 <div class="app">
+
   <header>
     <h1>DV <span>HAM RADIO</span></h1>
     <div class="rule"></div>
   </header>
 
+  <!-- BEGINSCHERM -->
+
   <main id="home">
+
+    <!-- UNIDEN -->
 
     <button class="menu" data-page="banks">
       <span class="ico">
-        <svg width="29" height="34" viewBox="0 0 28 36"
-             fill="none" stroke="currentColor" stroke-width="1.6">
+        <svg width="29" height="34"
+             viewBox="0 0 28 36"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="1.6">
           <path d="M9 10V2h3v8"/>
-          <rect x="5" y="10" width="19" height="24" rx="3"/>
-          <rect x="8" y="14" width="13" height="7" rx="1"/>
+          <rect x="5" y="10"
+                width="19" height="24" rx="3"/>
+          <rect x="8" y="14"
+                width="13" height="7" rx="1"/>
           <path d="M10 24h9M10 27h9M10 30h9"/>
         </svg>
       </span>
+
       <span>
         <span class="name">UNIDEN UBC125XLT</span>
         <span class="sub">Bank inhoud</span>
       </span>
+
       <span class="arrow">›</span>
     </button>
 
+    <!-- CB RADIO -->
+
     <button class="menu" data-page="cb">
       <span class="ico">
-        <svg width="27" height="27" viewBox="0 0 24 24"
-             fill="none" stroke="currentColor" stroke-width="1.7">
-          <rect x="3" y="8" width="18" height="12" rx="2"/>
+        <svg width="27" height="27"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="1.7">
+          <rect x="3" y="8"
+                width="18" height="12" rx="2"/>
           <path d="M7 8 15 3M7 12h7M7 15h5"/>
           <circle cx="17" cy="15" r="2"/>
         </svg>
       </span>
+
       <span>
         <span class="name">27MC / CB RADIO</span>
         <span class="sub">Kanalen en frequenties</span>
       </span>
+
       <span class="arrow">›</span>
     </button>
 
+    <!-- FREQUENTIE DATABASE -->
+
     <button class="menu" data-page="db">
       <span class="ico">
-        <svg width="27" height="27" viewBox="0 0 24 24"
-             fill="none" stroke="currentColor" stroke-width="1.6">
-          <rect x="5" y="2" width="14" height="20" rx="1.5"/>
-          <path d="M5 8h14M5 14h14M12 5h4M12 11h4M12 17h4"/>
+        <svg width="27" height="27"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="1.6">
+          <rect x="5" y="2"
+                width="14" height="20" rx="1.5"/>
+          <path d="M5 8h14M5 14h14
+                   M12 5h4M12 11h4M12 17h4"/>
           <circle cx="8" cy="5" r="1" fill="currentColor"/>
           <circle cx="8" cy="11" r="1" fill="currentColor"/>
           <circle cx="8" cy="17" r="1" fill="currentColor"/>
         </svg>
       </span>
+
       <span class="name">FREQUENTIE DATABASE</span>
       <span class="arrow">›</span>
     </button>
 
+    <!-- RADIO ZENDAMATEUR -->
+
     <button class="menu" data-page="amateur">
       <span class="ico">
-        <svg width="29" height="29" viewBox="0 0 24 24"
-             fill="none" stroke="currentColor" stroke-width="1.6">
-          <path d="M12 3v18M8 21h8M12 7 5 21M12 7l7 14M9 13h6M7 17h10"/>
-          <path d="M7.5 5a7 7 0 0 0 0 6M16.5 5a7 7 0 0 1 0 6"/>
-          <path d="M4.5 3a11 11 0 0 0 0 10M19.5 3a11 11 0 0 1 0 10"/>
+        <svg width="29" height="29"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="1.6">
+          <path d="M12 3v18M8 21h8
+                   M12 7 5 21M12 7l7 14
+                   M9 13h6M7 17h10"/>
+          <path d="M7.5 5a7 7 0 0 0 0 6
+                   M16.5 5a7 7 0 0 1 0 6"/>
+          <path d="M4.5 3a11 11 0 0 0 0 10
+                   M19.5 3a11 11 0 0 1 0 10"/>
         </svg>
       </span>
+
       <span class="name">RADIO ZENDAMATEUR</span>
+      <span class="arrow">›</span>
+    </button>
+
+    <!-- NIEUW: WebSDR+ -->
+
+    <button class="menu" data-page="websdr">
+      <span class="ico">
+        <svg width="29" height="29"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="1.7">
+          <rect x="3" y="7"
+                width="18" height="14" rx="2"/>
+          <path d="M7 7 14 2M7 12h7M7 15h5"/>
+          <circle cx="17" cy="15" r="2"/>
+        </svg>
+      </span>
+
+      <span>
+        <span class="name">WebSDR+</span>
+        <span class="sub">Live radio luisteren via Utrecht</span>
+      </span>
+
       <span class="arrow">›</span>
     </button>
 
   </main>
 
+  <!-- UNIDEN PAGINA -->
+
   <section class="page" id="banks">
     <button class="back">← Terug naar menu</button>
+
     <h2>UNIDEN UBC125XLT</h2>
     <div class="desc">Bank inhoud</div>
+
     <table id="banks-table">
-      <thead><tr><th>Bank</th><th>Inhoud</th></tr></thead>
+      <thead>
+        <tr>
+          <th>Bank</th>
+          <th>Inhoud</th>
+        </tr>
+      </thead>
       <tbody></tbody>
     </table>
   </section>
 
+  <!-- CB PAGINA -->
+
   <section class="page" id="cb">
     <button class="back">← Terug naar menu</button>
+
     <h2>27MC / CB RADIO</h2>
     <div class="desc">40 kanalen en frequenties</div>
+
     <div class="cb-grid">
+
       <table>
-        <thead><tr><th>Kanaal</th><th>Frequentie (MHz)</th></tr></thead>
+        <thead>
+          <tr>
+            <th>Kanaal</th>
+            <th>Frequentie (MHz)</th>
+          </tr>
+        </thead>
         <tbody id="cb-left"></tbody>
       </table>
+
       <table>
-        <thead><tr><th>Kanaal</th><th>Frequentie (MHz)</th></tr></thead>
+        <thead>
+          <tr>
+            <th>Kanaal</th>
+            <th>Frequentie (MHz)</th>
+          </tr>
+        </thead>
         <tbody id="cb-right"></tbody>
       </table>
+
     </div>
   </section>
 
+  <!-- FREQUENTIE DATABASE PAGINA -->
+
   <section class="page" id="db">
     <button class="back">← Terug naar menu</button>
+
     <h2>FREQUENTIE DATABASE</h2>
     <div class="desc">Frequentieoverzicht met logo's</div>
+
     <div class="scroll">
       <table id="db-table">
         <thead>
           <tr>
-            <th>FREQUENTIE</th><th>NAAM</th><th>TOONMODUS</th>
-            <th>TOON</th><th>DUPLEX</th><th>Offset/TX Freq</th>
-            <th>Mode</th><th>Vermogen</th>
+            <th>FREQUENTIE</th>
+            <th>NAAM</th>
+            <th>TOONMODUS</th>
+            <th>TOON</th>
+            <th>DUPLEX</th>
+            <th>Offset/TX Freq</th>
+            <th>Mode</th>
+            <th>Vermogen</th>
           </tr>
         </thead>
         <tbody></tbody>
       </table>
     </div>
-    <div class="hint">← Veeg horizontaal voor alle kolommen →</div>
+
+    <div class="hint">
+      ← Veeg horizontaal voor alle kolommen →
+    </div>
   </section>
+
+  <!-- RADIO ZENDAMATEUR PAGINA -->
 
   <section class="page" id="amateur">
     <button class="back">← Terug naar menu</button>
-    <h2>RADIO ZENDAMATEUR</h2>
-    <div class="desc">Repeaters en amateurfrequenties – regio Utrecht</div>
 
-    <a class="websdr"
+    <h2>RADIO ZENDAMATEUR</h2>
+    <div class="desc">
+      Repeaters en amateurfrequenties – regio Utrecht
+    </div>
+
+    <a class="websdr-link"
        href="http://websdr.pi1utr.hamnet.nl:8073/#freq=145575000,mod=nfm,sql=-150"
-       target="_blank" rel="noopener noreferrer">
-       📻 WebSDR+ ↗
+       target="_blank"
+       rel="noopener noreferrer">
+      📻 WebSDR+ ↗
     </a>
 
     <div class="scroll">
@@ -279,18 +534,47 @@ tbody tr:nth-child(even) td { background: #1a2b3e; }
     </div>
 
     <div class="note">
-      RX = uitgang van de repeater (wat je ontvangt).
-      TX = ingang van de repeater (waarop je zendt).
-      Bij digitale repeaters wordt soms een kleurcode gebruikt
-      in plaats van CTCSS. Bij PI6ATV zijn de genoemde
-      frequenties ATV-uitgangen; ontvangstingangen zijn
-      niet in deze tabel vastgesteld.
-      Controleer actuele gegevens bij de repeaterbeheerder.
+      RX = uitgang van de repeater, waarop je luistert.
+      TX = ingang van de repeater, waarop je zendt.
+      Digitale repeaters kunnen een kleurcode gebruiken
+      in plaats van CTCSS.
+      Controleer de actuele gegevens bij de repeaterbeheerder.
     </div>
   </section>
+
+  <!-- WebSDR+ IFRAME PAGINA -->
+
+  <section class="page" id="websdr">
+    <button class="back">← Terug naar menu</button>
+
+    <h2>WebSDR+</h2>
+    <div class="desc">Live luisteren via PI1UTR Utrecht</div>
+
+    <iframe
+      id="websdr-frame"
+      class="websdr-frame"
+      title="WebSDR PI1UTR"
+      data-src="http://websdr.pi1utr.hamnet.nl:8073/#freq=145575000,mod=nfm,sql=-150"
+      allow="autoplay">
+    </iframe>
+
+    <p class="note">
+      Wordt de WebSDR niet geladen?
+      <a
+        href="http://websdr.pi1utr.hamnet.nl:8073/#freq=145575000,mod=nfm,sql=-150"
+        target="_blank"
+        rel="noopener noreferrer">
+        Open WebSDR+ in een nieuw tabblad
+      </a>
+    </p>
+  </section>
+
 </div>
 
 <script>
+
+// UNIDEN BANKEN
+
 const banks = [
   'aviation general',
   'AMS schiphol',
@@ -304,6 +588,8 @@ const banks = [
   'Daans Favourites'
 ];
 
+// 27MC / CB RADIO
+
 const cb = [
   26.965,26.975,26.985,27.005,27.015,
   27.025,27.035,27.055,27.065,27.075,
@@ -315,39 +601,55 @@ const cb = [
   27.365,27.375,27.385,27.395,27.405
 ];
 
+// LOGO URL'S
+
 const logos = {
-  schiphol: 'https://upload.wikimedia.org/wikipedia/fr/thumb/8/85/Logo_Amsterdam_-_Schiphol_2025.svg/1280px-Logo_Amsterdam_-_Schiphol_2025.svg.png',
-  ns: 'https://i.pinimg.com/originals/6e/78/ab/6e78abf34e2a6d2a6be03454df8054f4.png',
-  syntus: 'https://nabuurschapdriebergennoord.nl/wp-content/uploads/2016/08/logo-syntusutrecht.png',
-  gvb: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Logo_GVB.svg/960px-Logo_GVB.svg.png',
-  mc: 'https://www.freepnglogos.com/uploads/mcdonalds-png-logo/mcdonalds-logo-image-png-4.png'
+  schiphol:
+    'https://upload.wikimedia.org/wikipedia/fr/thumb/8/85/Logo_Amsterdam_-_Schiphol_2025.svg/1280px-Logo_Amsterdam_-_Schiphol_2025.svg.png',
+
+  ns:
+    'https://i.pinimg.com/originals/6e/78/ab/6e78abf34e2a6d2a6be03454df8054f4.png',
+
+  syntus:
+    'https://nabuurschapdriebergennoord.nl/wp-content/uploads/2016/08/logo-syntusutrecht.png',
+
+  gvb:
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Logo_GVB.svg/960px-Logo_GVB.svg.png',
+
+  mc:
+    'https://www.freepnglogos.com/uploads/mcdonalds-png-logo/mcdonalds-logo-image-png-4.png'
 };
+
+// FREQUENTIE DATABASE
 
 const db = [
   ['145,57500','PI3UTR RX (Utrecht)','Tone','77,0','-','0,600000','FM','High'],
   ['144,97500','PI3UTR TX (Utrecht)','Tone','77,0','','','FM','High'],
   ['145,62500','PI3AMF RX (Amersfoort)','','','-','0,600000','FM','High'],
   ['430,07500','PI3ZST RX (Zeist)','','','+','1,600000','FM','High'],
+
   ['121,80000','AMS GROUND','','','off','','AM','High','schiphol'],
   ['119,22500','AMS TOWER','','','off','','AM','High','schiphol'],
   ['119,05000','AMS APPROACH','','','off','','AM','High','schiphol'],
   ['126,67500','AMS APPROACH','','','off','','AM','High','schiphol'],
+
   ['160,67500','SLUIS WBD RX','','','off','','FM','High'],
   ['156,67500','SLUIS WBD TX','','','','','FM','High'],
+
   ['429,88750','NS open','','','off','','FM','High','ns'],
   ['429,88750','NS CTCSS','Tone','136,5','','','FM','High','ns'],
   ['429,85000','NS s&v','','','off','','FM','High','ns'],
+
   ['145,80000','ISS','','','off','','FM','High'],
+
   ['419,87500','SYNTUS 030','Tone','100,0','','','FM','High','syntus'],
   ['145,57500','GVB Remise','Tone','162,2','','','FM','High','gvb'],
   ['455,81','McDon Neude','Tone','192,8','','','FM','High','mc']
 ];
 
-/*
-  Voorlopig overzicht.
-  Een streepje betekent: niet vastgesteld.
-  PI6ATV-uitgangen zijn geen gewone FM-spraakrepeaters.
-*/
+// RADIO ZENDAMATEUR
+// Voorlopige gegevens; controleer voor zendgebruik.
+
 const amateur = [
   ['PI3UTR','Utrecht','145,5750','144,9750','77,0 Hz','FM'],
   ['PI1UTR DMR','Utrecht','438,3500','430,7500','CC1','DMR'],
@@ -358,6 +660,8 @@ const amateur = [
   ['PI6ATV','IJsselstein','10290,0000','—','n.v.t.','DVB-S2']
 ];
 
+// TABEL FUNCTIE
+
 function addCell(tr, text) {
   const td = document.createElement('td');
   td.textContent = text;
@@ -365,23 +669,32 @@ function addCell(tr, text) {
   return td;
 }
 
-// UNIDEN
+// UNIDEN TABEL VULLEN
+
 banks.forEach((name, i) => {
   const tr = document.createElement('tr');
+
   addCell(tr, i + 1);
   addCell(tr, name);
+
   document.querySelector('#banks-table tbody').append(tr);
 });
 
-// CB: twee tabellen naast elkaar
+// CB TABELLEN VULLEN
+
 cb.forEach((freq, i) => {
   const tr = document.createElement('tr');
+
   addCell(tr, i + 1);
   addCell(tr, freq.toFixed(3).replace('.', ','));
-  document.querySelector(i < 20 ? '#cb-left' : '#cb-right').append(tr);
+
+  document.querySelector(
+    i < 20 ? '#cb-left' : '#cb-right'
+  ).append(tr);
 });
 
-// Frequentiedatabase met logo's
+// FREQUENTIEDATABASE MET LOGO'S
+
 db.forEach(row => {
   const tr = document.createElement('tr');
 
@@ -401,6 +714,7 @@ db.forEach(row => {
       img.src = logos[row[8]];
       img.alt = 'Logo ' + value;
       img.loading = 'lazy';
+
       img.onerror = () => img.remove();
 
       wrap.append(label, img);
@@ -411,15 +725,22 @@ db.forEach(row => {
   document.querySelector('#db-table tbody').append(tr);
 });
 
-// Zendamateur repeaters
+// RADIO ZENDAMATEUR TABEL VULLEN
+
 amateur.forEach(row => {
   const tr = document.createElement('tr');
+
   row.forEach(value => addCell(tr, value));
-  document.querySelector('#amateur-table tbody').append(tr);
+
+  document.querySelector(
+    '#amateur-table tbody'
+  ).append(tr);
 });
 
-// Navigatie
+// PAGINA NAVIGATIE EN WebSDR IFRAME
+
 function show(page) {
+
   document.querySelector('#home').style.display =
     page === 'home' ? 'grid' : 'none';
 
@@ -428,16 +749,43 @@ function show(page) {
       section.id === page ? 'block' : 'none';
   });
 
+  const frame = document.querySelector('#websdr-frame');
+
+  if (frame) {
+    if (page === 'websdr') {
+
+      // WebSDR pas laden bij openen.
+      if (!frame.getAttribute('src')) {
+        frame.src = frame.dataset.src;
+      }
+
+    } else {
+
+      // WebSDR stoppen bij verlaten van de pagina.
+      frame.removeAttribute('src');
+
+    }
+  }
+
   window.scrollTo(0, 0);
 }
 
+// MENUKNOPPEN
+
 document.querySelectorAll('[data-page]').forEach(button => {
-  button.addEventListener('click', () => show(button.dataset.page));
+  button.addEventListener('click', () => {
+    show(button.dataset.page);
+  });
 });
 
+// TERUGKNOPPEN
+
 document.querySelectorAll('.back').forEach(button => {
-  button.addEventListener('click', () => show('home'));
+  button.addEventListener('click', () => {
+    show('home');
+  });
 });
+
 </script>
 
 </body>
